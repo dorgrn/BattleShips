@@ -1,26 +1,25 @@
-function field_focus(field, email)
-  {
-    if(field.value === email)
-    {
-      field.value = '';
-    }
-  }
+$(document).ready(function() {
 
-  function field_blur(field, email)
-  {
-    if(field.value === '')
-    {
-      field.value = email;
-    }
-  }
+    var state = false;
 
-//Fade in dashboard box
-$(document).ready(function(){
-    // language=JQuery-CSS
-    $('.box').hide().fadeIn(1000);
+    //$("input:text:visible:first").focus();
+
+    $('#accesspanel').on('submit', function(e) {
+
+        e.preventDefault();
+
+        state = !state;
+
+        if (state) {
+            document.getElementById("litheader").className = "poweron";
+            document.getElementById("go").className = "";
+            document.getElementById("go").value = "Initializing...";
+        }else{
+            document.getElementById("litheader").className = "";
+            document.getElementById("go").className = "denied";
+            document.getElementById("go").value = "Access Denied";
+        }
+
     });
 
-//Stop click event
-$('a').click(function(event){
-    event.preventDefault(); 
-	});
+});

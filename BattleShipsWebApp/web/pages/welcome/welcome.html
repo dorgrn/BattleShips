@@ -7,6 +7,7 @@
         <!-- Link the Bootstrap (from twitter) CSS framework in order to use its classes-->
         <link rel="stylesheet" href="../../common/bootstrap.min.css">
         <link rel="stylesheet" href="welcome.css">
+        <!--link rel="stylesheet" href="welcome.css">-->
         <!-- Link jQuery JavaScript library in order to use the $ (jQuery) method-->
         <script src="/common/jquery-2.0.3.min.js"></script>
         <!-- and\or any other scripts you might need to operate the JSP file behind the scene once it arrives to the client-->
@@ -14,24 +15,42 @@
 
     </head>
     <body>
-    <form method="post" action="welcome.html">
-        <div class="box">
-            <h1>BattleShips</h1>
+    <div class="background-wrap">
+        <div class="background"></div>
+    </div>
 
-            <label>
-                <input name="username" value="username" onFocus="field_focus(this, 'username');"
-                       onblur="field_blur(this, 'username');" class="username"/>
-            </label>
-
-            <a href="#"><div class="btn">Sign In</div></a> <!-- End Btn -->
-
-            <a href="#"><div id="btn2">Sign Up</div></a> <!-- End Btn2 -->
-
-        </div> <!-- End Box -->
-
+    <form method="GET" action="/registration/login">
+        <h1 id="litheader">BATTLESHIPS</h1>
+        <div class="inset">
+            <p>
+                <input type="text" name="username" id="email" placeholder="Email address">
+            </p>
+            <p>
+                <input type="password" name="password" id="password" placeholder="Access code">
+            </p>
+            <div style="text-align: center;">
+                <div class="checkboxouter">
+                    <input type="checkbox" name="rememberme" id="remember" value="Remember">
+                    <label class="checkbox"></label>
+                </div>
+                <label for="remember">Remember me for 14 days</label>
+            </div>
+            <input class="loginLoginValue" type="hidden" name="service" value="login" />
+        </div>
+        <p class="p-container">
+            <input type="submit" name="Login" id="go" value="Authorize">
+        </p>
     </form>
 
+    <!--<div class="container">-->
+        <!--<h1>Battleships</h1>-->
+        <!--<br/>-->
+        <!--<h2>Please enter a unique user name:</h2>-->
+        <!--<form method="GET" action="/registration/login">-->
+            <!--<input type="text" name="username" class=""/>-->
+            <!--<input type="submit" value="Login"/>-->
+        <!--</form>-->
+    <!--</div>-->
     </body>
-</html>
 
-<body>
+</html>

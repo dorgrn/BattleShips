@@ -1,0 +1,28 @@
+* {
+    box-sizing: border-box;
+}
+
+.borders{
+    border: 1px solid #148056;
+}
+
+.watchers {
+    width: 20%;
+    float: left;
+    border: 1px solid #148056;
+    overflow-y: auto;
+    height: 80%;
+}
+.main {
+    width: 80%;
+    float: left;
+    border: 1px solid #148056;
+    height: 80%
+}
+
+.chat {
+    width: 100%;
+    float: left;
+    border: 1px solid #148056 ;
+    height: 20%;
+}
