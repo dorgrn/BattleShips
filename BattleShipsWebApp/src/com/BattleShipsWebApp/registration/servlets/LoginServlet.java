@@ -1,9 +1,10 @@
-package registration.servlets;
+package com.BattleShipsWebApp.registration.servlets;
 
-import registration.constants.Constants;
-import registration.users.User;
-import registration.utils.ServletUtils;
-import registration.utils.SessionUtils;
+import com.BattleShipsWebApp.constants.Constants;
+import com.BattleShipsWebApp.registration.users.User;
+import com.BattleShipsWebApp.registration.users.UserManager;
+import com.BattleShipsWebApp.utils.ServletUtils;
+import com.BattleShipsWebApp.utils.SessionUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,8 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-
-import static registration.constants.Constants.USERNAME;
 
 @WebServlet(name = "LogInServlet", urlPatterns = {"/registration/login"})
 public class LoginServlet extends HttpServlet {
@@ -41,10 +40,10 @@ public class LoginServlet extends HttpServlet {
         String usernameFromSession = SessionUtils.getUsername(request);
         PrintWriter out = response.getWriter();
 
-        registration.users.UserManager userManager = ServletUtils.getUserManager(getServletContext());
+        UserManager userManager = ServletUtils.getUserManager(getServletContext());
         if (usernameFromSession == null) {
             //user is not logged in yet
-            String usernameFromParameter = request.getParameter(USERNAME);
+            String usernameFromParameter = request.getParameter(Constants.USERNAME);
             if (usernameFromParameter == null) {
                 //no username in session and no username in parameter -
                 //redirect back to the index page
@@ -69,7 +68,7 @@ public class LoginServlet extends HttpServlet {
                     //set the username in a session so it will be available on each request
                     //the true parameter means that if a session object does not exists yet
                     //create a new one
-                    request.getSession(true).setAttribute(USERNAME, usernameFromParameter);
+                    request.getSession(true).setAttribute(Constants.USERNAME, usernameFromParameter);
 
                     //redirect the request to the chat room - in order to actually change the URL
                     System.out.println("On login, request URI is: " + request.getRequestURI());
@@ -77,7 +76,7 @@ public class LoginServlet extends HttpServlet {
                 }
             }
         } else {
-            // user already exists - show user's gamesRoom
+            // user already exists - show user's gamesRoom TODO: improve to handle bonus
             out.println("<script type=\"text/javascript\">");
             out.println("alert('Username or password incorrect');");
             out.println("location='" + SIGN_UP_URL + "';");

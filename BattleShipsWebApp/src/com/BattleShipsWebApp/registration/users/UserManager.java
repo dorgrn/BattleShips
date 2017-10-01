@@ -1,4 +1,4 @@
-package registration.users;
+package com.BattleShipsWebApp.registration.users;
 
 import java.util.Collections;
 import java.util.HashSet;

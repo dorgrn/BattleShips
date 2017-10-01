@@ -1,4 +1,4 @@
-package registration.users;
+package com.BattleShipsWebApp.registration.users;
 
 public class User {
     private final String userName;

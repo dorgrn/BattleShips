@@ -1,9 +1,9 @@
-package registration.utils;
+package com.BattleShipsWebApp.utils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import static registration.constants.Constants.USERNAME;
+import static com.BattleShipsWebApp.constants.Constants.USERNAME;
 
 public class SessionUtils {
 

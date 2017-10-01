@@ -1,4 +1,4 @@
-package registration.constants;
+package com.BattleShipsWebApp.constants;
 
 public class Constants {
     public static final String USERNAME = "username";

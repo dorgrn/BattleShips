@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>BattlesShips</title>
-    <link rel="stylesheet" href="../../common/w3.css">
     <link rel="stylesheet" href="gamesRoom.css">
     <script src="/common/jquery-2.0.3.min.js"></script>
     <script src="gamesRoom.js"></script>
@@ -11,11 +10,19 @@
 <body>
 
 <ul>
-    <li id="username">dor</li>
-    <li><a class="active" href="../welcome/welcome.html">Home</a></li>
-    <li><a href="#logout">Log out</a></li>
-    <li><a href="#about">About</a></li>
+    <li><a class="active" href="#">Home</a></li>
+    <li><a href="#">News</a></li>
+    <li><a href="#">Contact</a></li>
+    <li style="float:right"><a href="#">About</a></li>
 </ul>
+
+<!--<div style="padding-top: 30px;"></div>-->
+
+<form action="/readxml" method="post">
+    <input type="file" name="xml" accept="text/xml">
+    <br/>
+    <input type="text" value="Upload XML file">
+</form>
 
 <div style="margin-left:25%;padding:1px 16px;height:1000px;">
 
@@ -24,7 +31,7 @@
             <h2 style="text-align: left; padding-left: 30%">Games</h2>
             <table class="w3-container">
                 <thead>
-                <tr class = "w3-green">
+                <tr class="w3-green">
                     <th>Name</th>
                     <th>Creator</th>
                     <th>Board size</th>
@@ -40,7 +47,7 @@
             <h2 style="text-align: left; padding-left: 30%">Players</h2>
             <table class="w3-container">
                 <thead>
-                <tr class = "w3-green">
+                <tr class="w3-green">
                     <th>Username</th>
                     <th>Fighter/Watcher</th>
                     <th>Active</th>
