@@ -1,6 +1,6 @@
 package com.BattleShipsWebApp.mainGamesRoom.servlets.readResource;
 
-import com.BattleShipsWebApp.mainGamesRoom.gameFilesManager.GameFilesManager;
+import com.BattleShipsWebApp.mainGamesRoom.gameConfigsManager.GameConfigsManager;
 import com.BattleShipsWebApp.utils.ServletUtils;
 
 import javax.servlet.ServletException;
@@ -28,9 +28,9 @@ public class ReadXMLServlet extends HttpServlet {
         String absoluteFilename = getAbsolutePathOfResource(filePath);
         String fileContent = getResourceContent(absoluteFilename);
 
-        GameFilesManager gameFilesManager = ServletUtils.getGameFilesManager(getServletContext());
+        GameConfigsManager gameConfigsManager = ServletUtils.getGameFilesManager(getServletContext());
 
-        gameFilesManager.addFile(name, fileContent);
+      //  gameConfigsManager.addFile(name, fileContent);
 
         response.setStatus(4);
     }
