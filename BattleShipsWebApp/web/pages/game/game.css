@@ -7,22 +7,119 @@
 }
 
 .watchers {
-    width: 20%;
+    background-color: #f7ecb5;
+    width: 10%;
     float: left;
-    border: 1px solid #148056;
+    border: 1px solid #204d74;
     overflow-y: auto;
-    height: 80%;
+    height: 90%;
 }
+
 .main {
-    width: 80%;
+    background-color: #5bc0de;
+    width: 90%;
     float: left;
-    border: 1px solid #148056;
-    height: 80%
+    border: 1px solid #204d74;
+    height: 90%;
+}
+
+.battleshipHeader {
+    text-align: center;
+    color: #204d74;
+    font-size: 24px;
+    padding-top: 10px;
+    font-family: "Lucida Calligraphy";
 }
 
 .chat {
+    font-size: 12px;
     width: 100%;
     float: left;
-    border: 1px solid #148056 ;
-    height: 20%;
+    border: 1px solid #204d74;
+    overflow-y: auto;
+    height: 10%;
+}
+
+.battleshipBoard {
+    float: left;
+    padding-top: 15px;
+    padding-left: 20px;
+    font-size: 16px;
+}
+
+.trackingBoard {
+    float: right;
+    padding-top: 15px;
+    padding-right: 20px;
+    font-size: 16px;
+}
+
+.statistics {
+    text-align: center;
+    font-size: 14px;
+    padding-top: 1px;
+}
+
+.myBattleships {
+    height:200px;
+    width:180px;
+    font-size: 12px;
+    border:1px solid #204d74;
+    overflow:auto;
+    float: left;
+}
+
+.opponentBattleships {
+    height:200px;
+    width:180px;
+    font-size: 12px;
+    border:1px solid #204d74;
+    overflow:auto;
+    float: right;
+}
+
+.bottomTextsLine {
+    position: absolute;
+    line-height:500px;
+    margin-left:23px;
+}
+
+.commentsText {
+    position: absolute;
+    line-height:560px;
+    margin-left:23px;
+    font-size: 12px;
+}
+
+#retireButton {
+    font-size: 14px;
+    margin-left:1000px;
+    padding:5px 20px;
+    border-radius: 12px;
+    -webkit-transition-duration: 0.3s; /* Safari */
+    transition-duration: 0.3s;
+}
+
+#retireButton:hover {
+    background-color: #4165af; /* Green */
+    color: white;
+}
+
+#exitButton {
+    font-size: 14px;
+    margin-left: 10px;
+    padding:5px 28px;
+    border-radius: 12px;
+    -webkit-transition-duration: 0.3s; /* Safari */
+    transition-duration: 0.3s;
+}
+
+#exitButton:hover{
+    background-color: #4165af; /* Green */
+    color: white;
+}
+
+body, html {
+    font-family: Verdana;
+    font-size: 14px;
 }
