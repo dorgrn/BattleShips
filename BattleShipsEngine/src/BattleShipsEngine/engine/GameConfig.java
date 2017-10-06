@@ -1,8 +1,8 @@
 package BattleShipsEngine.engine;
 
 import generated.BattleShipGame;
-import generated.BattleShipGame.ShipTypes;
 import generated.BattleShipGame.Boards;
+import generated.BattleShipGame.ShipTypes;
 import generated.BattleShipGame.ShipTypes.ShipType;
 
 import javax.xml.bind.JAXBContext;
@@ -210,12 +210,6 @@ public class GameConfig implements Serializable {
             throw new ConfigException(String.format(
                     "Ships are too close together in cells [%d][%d]", x, y));
         }
-
-        /*
-        if (!GameBoard.isRectangleEmpty(new Point(x, y), height + 2, width + 2, gameBoard)) {
-            throw new ConfigException(String.format(
-                    "Ships are too close together in cells [%d][%d]", x, y));
-        }*/
     }
 
     private void checkIndexLegality(Boards.Board.Ship ship, int shipLength, GameBoard gameBoard) throws ConfigException {
@@ -271,6 +265,23 @@ public class GameConfig implements Serializable {
         return null;
     }
 
+//    public void loadFromStringXml(final String xmlContent) throws ConfigException {
+//
+//
+//        final String fileName ="Temp_"+ tempFilesCounter + fileExtension;
+//        tempFilesCounter++;
+//
+//        BinFileReaderWriter binFileReaderWriter = new BinFileReaderWriter();
+//        try {
+//            binFileReaderWriter.saveXmlToFile(fileName,"saves", xmlContent );
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        // TODO: 05-Oct-17 continue this!
+//
+//    }
+
     public void load(File file) throws IOException, ConfigException, JAXBException {
         checkValidXMLFormat(file);
         generateGame(file);
@@ -294,6 +305,17 @@ public class GameConfig implements Serializable {
         JAXBContext jaxbContext = JAXBContext.newInstance(BattleShipGame.class);
         Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
         generatedGame = (BattleShipGame) jaxbUnmarshaller.unmarshal(file);
+    }
+
+    private void checkValidXMLStringFormat(String fileContent) throws ConfigException, IOException {
+        if (fileContent == null) {
+            throw new ConfigException("No file entered.");
+        }
+
+        final String fileStart = fileContent.substring(0, XML_START_VALID.length());
+        if (!fileStart.equals(XML_START_VALID)) {
+            throw new ConfigException("File is not a valid XML file.");
+        }
     }
 
     private void checkValidXMLFormat(File file) throws ConfigException, IOException {

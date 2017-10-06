@@ -6,6 +6,10 @@
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
           <element id="module-output" name="BattleShipsWebApp" />
+          <element id="module-output" name="BattleShipsEngine" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="file-copy" path="$PROJECT_DIR$/BattleShipsWebApp/3rd/google-gson-2.1/gson-2.1.jar" />
         </element>
       </element>
     </root>

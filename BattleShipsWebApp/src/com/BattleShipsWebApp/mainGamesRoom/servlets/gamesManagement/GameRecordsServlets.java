@@ -1,11 +1,10 @@
-package com.BattleShipsWebApp.mainGamesRoom.servlets;
+package com.BattleShipsWebApp.mainGamesRoom.servlets.gamesManagement;
 
-import com.BattleShipsWebApp.constants.Constants;
-import com.BattleShipsWebApp.registration.users.UserManager;
+import com.BattleShipsWebApp.mainGamesRoom.gameConfigsManager.GameRecord;
+import com.BattleShipsWebApp.mainGamesRoom.gameConfigsManager.GameRecordsManager;
 import com.BattleShipsWebApp.utils.ServletUtils;
-import com.BattleShipsWebApp.utils.SessionUtils;
+import com.google.gson.Gson;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -13,17 +12,25 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Set;
 
-
-
-@WebServlet(name = "UsersServlet", urlPatterns = {"/gamesRoom/users"})
-public class UsersServlet extends HttpServlet {
-
+@WebServlet(name = "GameRecordServlet", urlPatterns = {"/gamesRoom/gameRecords"})
+public class GameRecordsServlets extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
 
-        request.setAttribute("username", SessionUtils.getUsername(request));
+        response.setContentType("application/json");
+
+        try (PrintWriter out = response.getWriter()) {
+            Gson gson = new Gson();
+            GameRecordsManager gameRecordsManager = ServletUtils.getGameConfigManager(getServletContext());
+            Set<GameRecord> gameRecords = gameRecordsManager.getGameRecords();
+            String json = gson.toJson(gameRecords);
+            //DEBUG - check json:
+            // System.out.println(json);
+            out.println(json);
+            out.flush();
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -65,6 +72,5 @@ public class UsersServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 
 }

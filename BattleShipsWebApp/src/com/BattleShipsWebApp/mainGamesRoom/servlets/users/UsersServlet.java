@@ -1,37 +1,40 @@
-package com.BattleShipsWebApp.mainGamesRoom.servlets;
+package com.BattleShipsWebApp.mainGamesRoom.servlets.users;
 
-import com.BattleShipsWebApp.registration.users.UserManager;
-import com.BattleShipsWebApp.utils.ServletUtils;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
 
+import com.BattleShipsWebApp.registration.users.User;
+import com.BattleShipsWebApp.registration.users.UserManager;
+import com.BattleShipsWebApp.utils.ServletUtils;
+import com.google.gson.Gson;
 
-@WebServlet(name = "WatchersServlet", urlPatterns = {"/gamesRoom/watchers"})
-public class WatchersServlet extends HttpServlet{
-
+@WebServlet(name = "UsersServlet", urlPatterns = {"/gamesRoom/users"})
+public class UsersServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
 
-        UserManager userManager = ServletUtils.getUserManager(getServletContext());
-        PrintWriter out = response.getWriter();
+        response.setContentType("application/json");
 
-
-        // TODO: 30-Sep-17 continue - insert games from gameList 
-        //out.println("$(li.item-");
-        
+        try (PrintWriter out = response.getWriter()){
+            Gson gson = new Gson();
+            UserManager userManager = ServletUtils.getUserManager(getServletContext());
+            Set<String> usersList = userManager.getUsers().stream().map(User::getUserName).collect(Collectors.toSet());
+            String json = gson.toJson(usersList);
+            out.println(json);
+            out.flush();
+        }
+        //response.setHeader("username", SessionUtils.getUsername(request));
     }
 
-
-
-
-        // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
 
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -70,4 +73,6 @@ public class WatchersServlet extends HttpServlet{
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
+
 }

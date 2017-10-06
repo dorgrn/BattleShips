@@ -1,11 +1,15 @@
 package com.BattleShipsWebApp.registration.users;
 
 public class User {
-    private final String userName;
+    private final String username;
+
+    public String getUserName() {
+        return username;
+    }
     //private final String sessionID;
 
     public User(String userName) {
-        this.userName = userName;
+        this.username = userName;
     }
 
     @Override
@@ -15,11 +19,11 @@ public class User {
 
         User user = (User) o;
 
-        return userName.equals(user.userName);
+        return username.equals(user.username);
     }
 
     @Override
     public int hashCode() {
-        return userName.hashCode();
+        return username.hashCode();
     }
 }
