@@ -12,12 +12,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 @WebServlet(name = "LogInServlet", urlPatterns = {"/registration/login"})
 public class LoginServlet extends HttpServlet {
     private final String GAMES_ROOM_URL = "../pages/gamesRoom/gamesRoom.html";
-    private final String SIGN_UP_URL = "../pages/welcome/signup.html";
+    private final String SIGN_UP_URL = "../pages/signup/signup.html";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -32,50 +31,54 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String usernameFromSession = SessionUtils.getUsername(request);
-        PrintWriter out = response.getWriter();
+        String usernameFromParameter = request.getParameter(Constants.USERNAME);
 
         UserManager userManager = ServletUtils.getUserManager(getServletContext());
-        if (usernameFromSession == null) {
-            //user is not logged in yet
-            String usernameFromParameter = request.getParameter(Constants.USERNAME);
-            if (usernameFromParameter == null) {
-                //no username in session and no username in parameter -
-                //redirect back to the index page
-                //this return an HTTP code back to the browser telling it to load
+
+        if (usernameFromSession == null) {  //user hasn't signedup yet
+            if (usernameFromParameter == null) { //no username in session and no username in parameter
+                response.setHeader(Constants.USERNAME_ERROR, "no username in request or session");
                 response.sendRedirect(SIGN_UP_URL);
-            } else {
+            } else { // signup
                 //normalize the username value
                 usernameFromParameter = usernameFromParameter.trim();
                 if (userManager.isUserExists(new User(usernameFromParameter))) {
-                    String errorMessage = "Username " + usernameFromParameter + " already exists. Please enter a different username.";
-                    // username already exists, forward the request back to index.jsp
-                    // with a parameter that indicates that an error should be displayed
-                    // the request dispatcher obtained from the servlet context is one that MUST get an absolute path (starting with'/')
-                    // and is relative to the web app root
-                    // see this link for more details:
-                    // http://timjansen.github.io/jarfiller/guide/servlet25/requestdispatcher.xhtml
-                    request.setAttribute(Constants.USER_NAME_ERROR, errorMessage);
-                    // getServletContext().getRequestDispatcher(LOGIN_ERROR_URL).forward(request, response);
+                    usernameExists(request, response, usernameFromParameter);
                 } else {
-                    //add the new user to the users list
-                    userManager.addUser(usernameFromParameter);
-                    //set the username in a session so it will be available on each request
-                    //the true parameter means that if a session object does not exists yet
-                    //create a new one
-                    request.getSession(true).setAttribute(Constants.USERNAME, usernameFromParameter);
-
-                    //redirect the request to the chat room - in order to actually change the URL
-                    System.out.println("On login, request URI is: " + request.getRequestURI());
-                    response.sendRedirect(GAMES_ROOM_URL);
+                    signupUser(request, response, usernameFromParameter, userManager);
                 }
             }
         } else {
-            // user already exists - show user's gamesRoom TODO: improve to handle bonus
-            out.println("<script type=\"text/javascript\">");
-            out.println("alert('Username or password incorrect');");
-            out.println("location='" + SIGN_UP_URL + "';");
-            out.println("</script>");
+            // user already signedup
+            if (usernameFromParameter.equals(usernameFromSession)) {
+                request.setAttribute(Constants.USERNAME_ALERT, "Username already exists. Redirecting to page.");
+            } else { // resign user using different name
+                resignUser(request, usernameFromSession, usernameFromParameter, userManager);
+            }
+
+            response.sendRedirect(GAMES_ROOM_URL);
         }
+    }
+
+    private void usernameExists(HttpServletRequest request, HttpServletResponse response, String usernameFromParameter) throws IOException {
+        String alertMessage = "Username " + usernameFromParameter + " already exists. Redirecting to page.";
+        request.setAttribute(Constants.USERNAME_ALERT, alertMessage);
+        response.sendRedirect(GAMES_ROOM_URL);
+    }
+
+    private void resignUser(HttpServletRequest request, String usernameFromSession, String usernameFromParameter, UserManager userManager) {
+        request.getSession(true).setAttribute(Constants.USERNAME, usernameFromParameter);
+        userManager.removeUser(usernameFromSession);
+        request.setAttribute(Constants.USERNAME_ALERT, "username already signedup, resigning");
+    }
+
+    private void signupUser(HttpServletRequest request, HttpServletResponse response, String usernameFromParameter, UserManager userManager) throws IOException {
+        //add the new user to the users list
+        userManager.addUser(usernameFromParameter);
+        request.getSession(true).setAttribute(Constants.USERNAME, usernameFromParameter);
+        //redirect the request to the chat room - in order to actually change the URL
+        System.out.println("On login, request URI is: " + request.getRequestURI());
+        response.sendRedirect(GAMES_ROOM_URL);
     }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

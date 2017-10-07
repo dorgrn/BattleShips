@@ -1,9 +1,12 @@
 package com.BattleShipsWebApp.mainGamesRoom.servlets.gamesManagement;
 
+import com.BattleShipsWebApp.constants.Constants;
+import com.BattleShipsWebApp.exceptions.RecordAlreadyExistsException;
 import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameRecord;
 import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameRecordsManager;
+import com.BattleShipsWebApp.registration.users.User;
+import com.BattleShipsWebApp.registration.users.UserManager;
 import com.BattleShipsWebApp.utils.ServletUtils;
-import com.google.gson.Gson;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,24 +15,44 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Set;
 
-@WebServlet(name = "GameRecordServlet", urlPatterns = {"/gamesRoom/gameRecords"})
-public class GameRecordsServlets extends HttpServlet {
+import static com.BattleShipsWebApp.constants.Constants.GAME_ROOM_URI;
+
+
+@WebServlet(name = "AddUserServlet", urlPatterns = {"/gamesRoom/gameRecords/addUser"})
+public class AddUserServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        response.setContentType("application/json");
+        response.setContentType("text/html;charset=UTF-8");
+        UserManager userManager = ServletUtils.getUserManager(request.getServletContext());
+        GameRecordsManager gameRecordsManager = ServletUtils.getGameRecordsManager(request.getServletContext());
 
-        try (PrintWriter out = response.getWriter()) {
-            Gson gson = new Gson();
-            GameRecordsManager gameRecordsManager = ServletUtils.getGameRecordsManager(getServletContext());
-            Set<GameRecord> gameRecords = gameRecordsManager.getGameRecords();
-            String json = gson.toJson(gameRecords);
-            //DEBUG - check json:
-            // System.out.println(json);
-            out.println(json);
-            out.flush();
+        // needed params
+        final String usernameFromParameter = request.getParameter(Constants.USERNAME_ATTRIBUTE);
+        final String gameName = request.getParameter(Constants.GAME_NAME_ATTRIBUTE_NAME);
+        final String userRole = request.getParameter(Constants.USER_ROLE_ATTRIBUTE);
+
+        User user = userManager.getUser(usernameFromParameter);
+        GameRecord gameRecord = gameRecordsManager.getGameByName(gameName);
+
+        PrintWriter out = response.getWriter();
+        try {
+
+            if (userRole.equals(Constants.USER_PARTICIPANT)) {
+                gameRecordsManager.addPaticipantToGame(user, gameRecord);
+            } else if (userRole.equals(Constants.USER_WATCHER)) {
+                gameRecordsManager.addWathcerToGame(user, gameRecord);
+            }
+            response.sendRedirect(Constants.GAME_URI);
+
+        } catch (RecordAlreadyExistsException e) {
+            System.err.println(e.getMessage());
+            response.setHeader(Constants.USERNAME_ERROR, "You are already signed up for this game!");
+        } finally {
+            if (out != null) {
+                out.close();
+            }
         }
     }
 
@@ -72,5 +95,4 @@ public class GameRecordsServlets extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }

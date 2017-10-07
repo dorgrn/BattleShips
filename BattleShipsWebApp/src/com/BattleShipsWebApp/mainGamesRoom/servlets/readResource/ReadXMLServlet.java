@@ -2,11 +2,14 @@ package com.BattleShipsWebApp.mainGamesRoom.servlets.readResource;
 
 import BattleShipsEngine.engine.ConfigException;
 import BattleShipsEngine.engine.GameConfig;
+import com.BattleShipsWebApp.constants.Constants;
 import com.BattleShipsWebApp.exceptions.RecordAlreadyExistsException;
-import com.BattleShipsWebApp.mainGamesRoom.gameConfigsManager.GameRecordsManager;
+import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameRecord;
+import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameRecordsManager;
 import com.BattleShipsWebApp.utils.InputFileUtils;
 import com.BattleShipsWebApp.utils.ServletUtils;
 import com.BattleShipsWebApp.utils.SessionUtils;
+import com.google.gson.Gson;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -26,8 +29,6 @@ import java.util.Scanner;
 @WebServlet(name = "ReadXMLServlet", urlPatterns = {"/readResource/readxml"})
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 5 * 5)
 public class ReadXMLServlet extends HttpServlet {
-    private static final String GAME_NAME_ATTRIBUTE_NAME = "gameName";
-    private static final String ERROR_ATTRIBUTE_NAME = "errorName";
     private static final String gamesRoomURI = "/pages/gamesRoom/gamesRoom.html";
     private int tempSaveCounter = 0;
 
@@ -72,22 +73,30 @@ public class ReadXMLServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
-        final String gameName = request.getParameter(GAME_NAME_ATTRIBUTE_NAME);
+        final String gameName = request.getParameter(Constants.GAME_NAME_ATTRIBUTE_NAME);
         final String creatorName = SessionUtils.getUsername(request);
         final Part filePart = request.getPart("file"); // Retrieves <input type="file" name="file">
         final String fileName = getSubmittedFileName(filePart);
-
+        boolean success = false;
         InputStream fileContent = filePart.getInputStream();
         File outputTempFile = InputFileUtils.inputStreamToFile(fileContent, "temp", "TEMP_" + tempSaveCounter++, "xml");
 
         GameConfig gameConfig = new GameConfig();
         try {
             gameConfig.load(outputTempFile);
-            GameRecordsManager gameRecordsManager = ServletUtils.getGameConfigManager(getServletContext());
-            gameRecordsManager.addGameRecord(gameName, creatorName, gameConfig);
+            GameRecordsManager gameRecordsManager = ServletUtils.getGameRecordsManager(getServletContext());
+            GameRecord gameRecord = new GameRecord(gameName, creatorName, gameConfig);
+            gameRecordsManager.addGameRecord(gameRecord);
 
+            // add game record to session
+            request.getSession().setAttribute(Constants.SESSION_SAVED_GAMES, new Gson().toJson(gameRecord));
             System.out.println("Config inserted successfully");
-        }catch(RecordAlreadyExistsException e){
+
+            /* TODO: 07-Oct-17 redirect after upload...
+            success = true;
+            response.sendRedirect(Constants.GAME_URI);
+            */
+        } catch (RecordAlreadyExistsException e) {
             System.err.println(e.getMessage());
             response.setHeader("RecordAlreadyExistsException", gameName);
         } catch (ConfigException e) {
@@ -98,7 +107,9 @@ public class ReadXMLServlet extends HttpServlet {
             response.setHeader("JAXBException", gameName);
         }
 
-        response.sendRedirect(gamesRoomURI);
+        if (!success) {
+            response.sendRedirect(gamesRoomURI);
+        }
     }
 
     /**

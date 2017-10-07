@@ -12,58 +12,38 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 @WebServlet(name = "LogOutServlet", urlPatterns = {"/registration/logout"})
-public class LogoutServlet extends HttpServlet{
+public class LogoutServlet extends HttpServlet {
 
-    private final String SIGN_UP_URL = "../pages/welcome/signup.html";
+    private final String SIGN_UP_URL = "/pages/signup/signup.html";
+
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
-
         String usernameFromSession = SessionUtils.getUsername(request);
         String callerUri = request.getParameter("CALLER_URI");
-        PrintWriter out = response.getWriter();
-
-
+        String usernameFromParameter = request.getParameter(Constants.USERNAME);
         UserManager userManager = ServletUtils.getUserManager(getServletContext());
-        if (usernameFromSession != null) {
-            String usernameFromParameter = request.getParameter(Constants.USERNAME);
-            if (usernameFromParameter == null) {
-                //no username in session and no username in parameter -
-                //redirect back to the index page
-                //this return an HTTP code back to the browser telling it to load
-                response.sendRedirect(callerUri);
-            } else {
-                //normalize the username value
-                usernameFromParameter = usernameFromParameter.trim();
-                if (!userManager.isUserExists(new User(usernameFromParameter))) {
-                    String errorMessage = "Username " + usernameFromParameter + " doesn't exist.";
-                    request.setAttribute(Constants.USER_NAME_ERROR, errorMessage);
-                    // getServletContext().getRequestDispatcher(LOGIN_ERROR_URL).forward(request, response);
-                } else {
-                    // remove user
-                    userManager.removeUser(usernameFromParameter);
-                    //set the username in a session so it will be available on each request
-                    //the true parameter means that if a session object does not exists yet
-                    //create a new one
-                    request.getSession(true).setAttribute(Constants.USERNAME, "");
 
-                    //redirect the request to the chat room - in order to actually change the URL
-                    System.out.println("On login, request URI is: " + request.getRequestURI());
-                    response.sendRedirect(SIGN_UP_URL);
-                }
-            }
-        } else {
-            // user already exists - show user's gamesRoom TODO: improve to handle bonus
-            out.println("<script type=\"text/javascript\">");
-            out.println("alert('Username or password incorrect');");
-            out.println("location='" + SIGN_UP_URL + "';");
-            out.println("</script>");
+        if (usernameFromSession == null || usernameFromParameter == null) {
+            response.setHeader(Constants.USERNAME_ERROR, "User doesn't exist on logout.");
+            response.sendRedirect(callerUri);
         }
+
+        if (!userManager.isUserExists(new User(usernameFromParameter))) { // user already exists - show user's gamesRoom (bonus)
+            response.setHeader(Constants.USERNAME_ERROR, "user name isn't in database");
+            response.sendRedirect(callerUri);
+            // getServletContext().getRequestDispatcher(LOGIN_ERROR_URL).forward(request, response);
+        } else { // username is found
+            // remove user
+            userManager.removeUser(usernameFromParameter);
+            System.out.println("On logout, request URI is: " + request.getRequestURI());
+            response.sendRedirect(SIGN_UP_URL);
+        }
+
     }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -35,4 +35,12 @@ public class UserManager {
     public boolean isUserExists(User user) {
         return usersSet.contains(user);
     }
+
+    public User getUser(String username) {
+        Optional<User> result = usersSet.stream()
+                .filter(user -> user.getUserName().equals(username))
+                .findFirst();
+
+        return result.orElse(null);
+    }
 }

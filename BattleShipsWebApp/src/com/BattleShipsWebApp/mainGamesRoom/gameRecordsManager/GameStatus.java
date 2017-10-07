@@ -1,4 +1,4 @@
-package com.BattleShipsWebApp.mainGamesRoom.gameConfigsManager;
+package com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager;
 
 public enum GameStatus {
     EMPTY,

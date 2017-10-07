@@ -1,6 +1,8 @@
-package com.BattleShipsWebApp.mainGamesRoom.gameConfigsManager;
+package com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager;
 
 import BattleShipsEngine.engine.GameConfig;
+import com.BattleShipsWebApp.exceptions.RecordAlreadyExistsException;
+import com.BattleShipsWebApp.exceptions.RecordDoesnNotExistsException;
 import com.BattleShipsWebApp.registration.users.User;
 
 import java.util.Collections;
@@ -44,6 +46,38 @@ public class GameRecord {
 
     public Set<User> getWatchers() {
         return Collections.unmodifiableSet(watchers);
+    }
+
+    public void addParticipant(User user) throws RecordAlreadyExistsException {
+        if (participants.contains(user)){
+            throw new RecordAlreadyExistsException("User is already a partcipant! " + user.getUserName());
+        }
+
+        participants.add(user);
+    }
+
+    public void addWatcher(User user) throws RecordAlreadyExistsException {
+        if (watchers.contains(user)){
+            throw new RecordAlreadyExistsException("User is already a watcher! " + user.getUserName());
+        }
+
+        watchers.add(user);
+    }
+
+    public void removeParticipant(User user) throws RecordDoesnNotExistsException {
+        if (!participants.contains(user)){
+            throw new RecordDoesnNotExistsException("User is not a participant! " + user.getUserName());
+        }
+
+        participants.remove(user);
+    }
+
+    public void removeWatcher(User user) throws RecordDoesnNotExistsException {
+        if (!watchers.contains(user)){
+            throw new RecordDoesnNotExistsException("User is not a watcher! " + user.getUserName());
+        }
+
+        watchers.remove(user);
     }
 
     @Override

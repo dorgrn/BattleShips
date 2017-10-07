@@ -11,15 +11,15 @@
 <body>
 
 <div class="topnav" id="topnav">
-    <a href="#" id = "usernameNav"></a>
-    <a href="#">Home</a>
+    <a href="" onclick="return false;" style="cursor: default" id = "usernameNav"></a>
+    <a href="" onclick="return false;" class="active">Home</a>
     <a href="#">About</a>
-    <a href="#" onclick="logout()">Logout</a>
+    <a href="" onclick="logout(); return false;" style="float: right">Logout</a>
 </div>
 
-<div class="col-games" style="float: left; padding-left: 20%">
+<div class="col-games" style="float: left; padding-left: 5%">
 
-    <h2 style="text-align: left;">Games</h2>
+    <h2 style="text-align: center;">Games</h2>
     <table id="table_games">
         <thead>
         <tr>
@@ -27,26 +27,26 @@
             <th>Creator</th>
             <th>Board size</th>
             <th>Status</th>
+            <th>Join</th>
         </tr>
         </thead>
         <tbody>
         </tbody>
     </table>
-
-    <div>
-        <h3>Upload a new game: </h3><br/>
-        <form action="/readResource/readxml" onsubmit="refreshGamesList()" method="post" enctype="multipart/form-data">
-            <input id="uploadXMLInput" type="file" name="file" accept="text/xml" size="50" required/>
-            <br/><h3>Enter wanted game name:</h3>
-            <input id="uploadGameNameInput" type="text" name="gameName" required> <br/>
-            <input id="uploadXMLButton" type="submit" value="Upload File"/>
-        </form>
-    </div>
-
 </div>
 
-<div class="col-players" style="float: left; padding-left: 30%">
-    <h2 style="text-align: left; padding-left: 30%">Players</h2>
+<div class="uploadFile" style="float: left; padding-left: 10%; padding-right: 10%">
+    <h3>Upload a new game: </h3><br/>
+    <form action="/readResource/readxml" onsubmit="refreshGamesList()" method="post" enctype="multipart/form-data">
+        <input id="uploadXMLInput" type="file" name="file" accept="text/xml" size="50" required/>
+        <br/><h3>Enter wanted game name:</h3>
+        <input id="uploadGameNameInput" type="text" name="GAME_NAME" required> <br/> <!-- name from Constants -->
+        <input id="uploadXMLButton" type="submit" value="Upload File"/>
+    </form>
+</div>
+
+<div class="col-players" style="float: left; padding-right: 5%">
+    <h2 style="text-align: center;">Players</h2>
     <table id="table_users">
         <thead>
         <tr>
