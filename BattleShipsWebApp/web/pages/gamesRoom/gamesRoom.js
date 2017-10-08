@@ -51,28 +51,29 @@ function stopListsRefresh() {
 
 function refreshGamesList(games) {
     //clear all current users
-    $("#table_games").find("tr:gt(0)").remove();
+    var tableGame = $("#table_games");
+    tableGame.find("tr:gt(0)").remove(); // remove everything not in header of table
 
     var rows = "";
 
+    //add rows to table
     $.each(games || [], function (index, game) {
         //console.log("Adding game #" + index + ": " + game.gameName);
         rows += "<tr><td>" + game.gameName + "</td>" +
             "<td>" + game.creator.username + "</td>" +
             "<td>" + game.boardSize + "</td>" +
             "<td>" + translateGameStatus(game.gameStatus) + "</td>" +
-            "<td>" + createJoinGameLink(game) + "</td>";
+            "<td>" + createJoinGameLink(game) + "</td></tr>";
 
-        $('#table_games').on('click', '.joinLink', function () {
+        tableGame.on('click', '.joinLink', function () {
             joinGame(game);
         });
 
-        $('#table_games').on('click', '.watchLink', function () {
+        tableGame.on('click', '.watchLink', function () {
             watchGame(game);
         });
 
     });
-
 
 
     $(rows).appendTo("#table_games tbody");
@@ -97,7 +98,6 @@ function createJoinGameLink(game) {
     }
 
 
-
     //console.log("In crate game result is" + result);
 
     return result;
@@ -107,7 +107,7 @@ function ajaxJoinOrWatch(userRole, game) {
     $.ajax({
             type: 'GET',
             url: ADD_USER_URI,
-            dataType : 'html',
+            dataType: 'html',
             data: { // should match Constants
                 "USERNAME": $("#usernameNav").text(),
                 "GAME_NAME": game.gameName,
@@ -115,7 +115,7 @@ function ajaxJoinOrWatch(userRole, game) {
             },
             success: function (data, textStatus, request) {
                 var errorHeader = request.getResponseHeader("username_error");
-                if (errorHeader !== null){
+                if (errorHeader !== null) {
                     alert(errorHeader);
                 }
             }
