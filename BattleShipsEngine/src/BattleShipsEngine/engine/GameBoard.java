@@ -3,6 +3,8 @@ package BattleShipsEngine.engine;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class GameBoard implements Serializable {
@@ -13,6 +15,7 @@ public class GameBoard implements Serializable {
     public static final char MINE_SYMBOL = 'M';
     public final int length; // one row/column length
     private char[][] board;
+    private static final Logger LOGGER = Logger.getLogger(GameConfig.class.getName());
 
     public GameBoard(int boardLength) {
         this.length = boardLength;
@@ -23,35 +26,8 @@ public class GameBoard implements Serializable {
         return x >= 0 && x < boardLength && y >= 0 && y < boardLength;
     }
 
-    /*
-    public static boolean isRectangleEmpty(Point center, int height, int width, GameBoard board) {
-        if (center == null || !isIndexInBoard(center.getY(), center.getX(), board.length)) {
-            return false;
-        }
-
-        int x = center.getX();
-        int y = center.getY();
-        char[][] tempBoard = board.getBoard();
-
-        for ( int i = x - (width / 2); i <= x + (width / 2); i++ ) {
-            for ( int j = y - (height / 2); j <= y + (height / 2); j++ ) {
-                // if index is illegal continue
-                if (!isIndexInBoard(i, j, board.length)) {
-                    continue;
-                }
-
-                //otherwise check that empty
-                if (tempBoard[i][j] != GameBoard.EMPTY_SYMBOL) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }*/
-
     public static Point getEmptyNextToHit(GameBoard trackingGrid, Player player) {
-        Point result;
+        Point result = null;
         for ( Ship ship : player.getShips() ) {
             List<Point> hitPoints = ship.getHitPoints();
             for ( Point point : hitPoints ) {
@@ -73,16 +49,56 @@ public class GameBoard implements Serializable {
         return (int) (Math.random() * (max - min + 1) + min);
     }
 
-    public static boolean isRectangleEmpty(Point point, int deltaX, int deltaY, int width, int height, GameBoard board) {
+    public static boolean isRectangleEmpty(final Point point, int height, int width, Ship.Direction direction, final GameBoard board) {
         if (point == null || !isIndexInBoard(point.getX(), point.getY(), board.length)) {
             return false;
         }
 
-        Point xParams = getStartPointsOfRectangle(deltaX, point.getX(), height);
-        Point yParams = getStartPointsOfRectangle(deltaY, point.getY(), width);
+        int rowsUp = 0;
+        int rowsDown = 0;
+        int colsLeft = 0;
+        int colsRight = 0;
 
-        for ( int i = xParams.getX(); i <= xParams.getY(); i++ ) {
-            for ( int j = yParams.getX(); j <= yParams.getY(); j++ ) {
+        switch (direction) {
+            case LEFT:
+                rowsUp = point.getX() - 1;
+                rowsDown = point.getX() + 1;
+                colsLeft = point.getY() - width;
+                colsRight = point.getY() + 1;
+                break;
+            case RIGHT:
+                rowsUp = point.getX() - 1;
+                rowsDown = point.getX() + 1;
+                colsLeft = point.getY() - 1;
+                colsRight = point.getY() + width;
+                break;
+            case DOWN:
+                rowsUp = point.getX() - 1;
+                rowsDown = point.getX() + height;
+                colsLeft = point.getY() - 1;
+                colsRight = point.getY() + 1;
+                break;
+            case UP:
+                rowsUp = point.getX() - height;
+                rowsDown = point.getX() + 1;
+                colsLeft = point.getY() - 1;
+                colsRight = point.getY() + 1;
+                break;
+        }
+
+
+//        colsRight = rowsDown = Math.max(rowsDown, board.length);
+//        colsLeft = rowsUp = Math.min(0, board.length);
+
+        final String logMessage =
+                "Checking Ship " + "Height: " + height + " Width:" + width
+                        + "Checking rows Up:" + rowsUp + " Down:" + rowsDown
+                        + "Checking cols Left:" + colsLeft + " Right:" + colsRight;
+
+        LOGGER.log(Level.FINER, logMessage);
+
+        for ( int i = rowsUp; i <= rowsDown; i++ ) {
+            for ( int j = colsLeft; j <= colsRight; j++ ) {
                 // if index is illegal continue
                 if (!isIndexInBoard(j, i, board.length)) {
                     continue;
@@ -98,20 +114,6 @@ public class GameBoard implements Serializable {
         return true;
     }
 
-    private static Point getStartPointsOfRectangle(int delta, int position, int difference) {
-        int startPoint;
-        int endPoint;
-
-        if (delta > 0) {
-            startPoint = position - 1;
-            endPoint = position + difference;
-        } else {
-            startPoint = position - difference;
-            endPoint = position + 1;
-        }
-
-        return new Point(startPoint, endPoint);
-    }
 
     public void initializeBoard() {
         this.board = new char[this.length][this.length];
@@ -137,18 +139,6 @@ public class GameBoard implements Serializable {
 
     public void setPointInBoard(Point point, char setTo) {
         board[point.getX()][point.getY()] = setTo; // and that's it
-    }
-
-    public String getBoardAsString() {
-        StringBuilder returnVal = new StringBuilder();
-        for ( int i = 0; i < length; i++ ) {
-            for ( int j = 0; j < length; j++ ) {
-                returnVal.append(board[i][j]);
-            }
-            returnVal.append('\n');
-        }
-
-        return returnVal.toString();
     }
 
     public Point getEmptyNeighbour(Point point) {
@@ -182,6 +172,18 @@ public class GameBoard implements Serializable {
     public boolean isValidEmptyPoint(Point point) {
         return point != null && isIndexInBoard(point.getX(), point.getY(), length)
                 && getPointInBoard(point) == GameBoard.EMPTY_SYMBOL;
+    }
+
+    public String getBoardAsString() {
+        StringBuilder returnVal = new StringBuilder();
+        for ( int i = 0; i < length; i++ ) {
+            for ( int j = 0; j < length; j++ ) {
+                returnVal.append(board[i][j]);
+            }
+            returnVal.append('\n');
+        }
+
+        return returnVal.toString();
     }
 }
 

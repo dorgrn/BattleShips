@@ -24,7 +24,11 @@ public class Point implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof Point && (((Point) obj).x == this.x && ((Point) obj).y == this.y);
+        if (obj instanceof Point) {
+            return (((Point) obj).x == this.x &&
+                    ((Point) obj).y == this.y);
+        }
+        return false;
     }
 
     public int getX() {

@@ -2,7 +2,6 @@ package BattleShipsEngine.engine;
 
 import generated.BattleShipGame;
 import generated.BattleShipGame.Boards;
-import generated.BattleShipGame.ShipTypes;
 import generated.BattleShipGame.ShipTypes.ShipType;
 
 import javax.xml.bind.JAXBContext;
@@ -13,6 +12,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class GameConfig implements Serializable {
     private static final int MIN_BOARD_LENGTH = 5;
@@ -21,6 +22,8 @@ public class GameConfig implements Serializable {
     private static final String fileExtension = ".xml";
     private static final String XML_START_VALID = "<?xml";
     private BattleShipGame generatedGame;
+    private static final Logger LOGGER = Logger.getLogger(GameConfig.class.getName());
+
 
     public Game initiateGameFromGenerated() throws ConfigException {
         if (generatedGame == null) {
@@ -39,8 +42,8 @@ public class GameConfig implements Serializable {
     }
 
     private void insertGamePieces(Game game) throws ConfigException {
-        List<ShipTypes.ShipType> shipTypes = generatedGame.getShipTypes().getShipType();
-        List<BattleShipGame.Boards.Board> boards = generatedGame.getBoards().getBoard();
+        List<ShipType> shipTypes = generatedGame.getShipTypes().getShipType();
+        List<Boards.Board> boards = generatedGame.getBoards().getBoard();
 
         if (boards.size() != AMOUNT_OF_PLAYERS) {
             throw new ConfigException("Amount of boards doesn't fit players!");
@@ -51,7 +54,7 @@ public class GameConfig implements Serializable {
         for ( Boards.Board board : boards ) {
 
             // hash of each ship type and its amount as in file
-            Hashtable<ShipTypes.ShipType, Integer> typesAmount = getShipTypesAmount(shipTypes);
+            Hashtable<ShipType, Integer> typesAmount = getShipTypesAmount(shipTypes);
             currentPlayer.setShipsAmountByType(fromShipTypeToInt(typesAmount));
 
             // for each ship in board
@@ -80,22 +83,26 @@ public class GameConfig implements Serializable {
     }
 
     private void updatePlayerMines(Player player, BattleShipGame.Mine mine) throws ConfigException {
-        if (mine == null || mine.getAmount() < 0) {
+        if (mine == null) {
+            player.setMinesToPlace(0);
+            return;
+        } else if (mine.getAmount() < 0) {
             throw new ConfigException("Mines amount can't be negative.");
         }
 
         player.setMinesToPlace(mine.getAmount());
     }
 
-    private void insertShipToPlayer(Boards.Board.Ship ship, Player player, List<ShipTypes.ShipType> shipTypes,
-                                    Hashtable<ShipTypes.ShipType, Integer> typesAmount) throws ConfigException {
+    private void insertShipToPlayer(Boards.Board.Ship ship, Player player, List<ShipType> shipTypes,
+                                    Hashtable<ShipType, Integer> typesAmount) throws ConfigException {
         GameBoard gameBoard = player.getPrimaryGrid();
 
         ShipType shipType = findShipInShipTypes(ship, shipTypes); // get ship type
         checkShipType(shipType, typesAmount); // check validity of type
         checkIndexLegality(ship, shipType.getLength(), gameBoard); // check indices of each type
         addIndicesToBoard(ship, shipType.getLength(), gameBoard); // add given indices to board
-        Point shipPosition = new Point(ship.getPosition().getX(), ship.getPosition().getY()); // insert ship to board
+        Point shipPosition = generatedPointToBoardPoint(new Point(ship.getPosition().getX(), ship.getPosition().getY())); // insert ship to board.
+        // -1 because (x,y) in generated translates to (x-1,y-1) in gameboard
         Ship toInsert =
                 (Ship) NavalFactory.getGamePiece(getSubTypeFromShip(ship), shipPosition, shipType.getLength());
         toInsert.addAdditionalDetails(shipType, shipType.getScore());
@@ -132,26 +139,24 @@ public class GameConfig implements Serializable {
     private void addIndicesToBoard(Boards.Board.Ship ship, int shipLength, GameBoard gameBoard) {
         NavalFactory.GamePieceType type = NavalFactory.getPieceTypeFromString(ship.getDirection());
 
+
         Ship toInsert = (Ship) NavalFactory.getGamePiece(type,
-                new Point(ship.getPosition().getX(), ship.getPosition().getY()), shipLength);
+                generatedPointToBoardPoint(ship.getPosition().getX(), ship.getPosition().getY()), shipLength);
 
         for ( Point point : toInsert.getBody().keySet() ) {
             gameBoard.setPointInBoard(point, GameBoard.SHIP_SYMBOL);
         }
     }
 
-    private Point getDeltasFromShape(NavalFactory.GamePieceType subType) {
-        int deltaX = 0;
-        int deltaY = 0;
-
-        if (subType == NavalFactory.GamePieceType.REGULAR_SHIP_COLUMN) {
-            deltaX = 1;
-
-        } else if (subType == NavalFactory.GamePieceType.REGULAR_SHIP_ROW) {
-            deltaY = 1;
+    private Point generatedPointToBoardPoint(final Point generatedPoint) {
+        if (generatedPoint == null) {
+            return null;
         }
+        return new Point(generatedPoint.getX() - 1, generatedPoint.getY() - 1);
+    }
 
-        return new Point(deltaX, deltaY);
+    private Point generatedPointToBoardPoint(int x, int y) {
+        return generatedPointToBoardPoint(new Point(x, y));
     }
 
     private void checkShipType(ShipType shipType, Hashtable<ShipType, Integer> shipTypesHash) throws ConfigException {
@@ -173,6 +178,8 @@ public class GameConfig implements Serializable {
         int y = position.getY();
         int boardLength = gameBoard.length;
 
+        // delta = the advancement in units in relation to board
+        // for example deltaX = -1 means we take 1 step left in board for each point
         int deltaY = 0;
         int deltaX = 0;
         int height = 0;
@@ -201,20 +208,20 @@ public class GameConfig implements Serializable {
                 break;
         }
 
-        if (x + shipLength * deltaX > boardLength || y + shipLength * deltaY > boardLength) {
+        if (x + (shipLength - 1) * deltaX >= boardLength || x + (shipLength - 1) * deltaX < 0
+                || y + (shipLength - 1) * deltaY < 0 || y + (shipLength - 1) * deltaY >= boardLength) {
             throw new ConfigException("Ships indexes exceed board.");
         }
 
-        // height + 1 for each side, width + 1 fot each side
-        if (!GameBoard.isRectangleEmpty(new Point(x, y), deltaX, deltaY, width, height, gameBoard)) {
+        if (!GameBoard.isRectangleEmpty(position, height, width, direction, gameBoard)) {
             throw new ConfigException(String.format(
-                    "Ships are too close together in cells [%d][%d]", x, y));
+                    "Ships are too close together in %s", position));
         }
     }
 
     private void checkIndexLegality(Boards.Board.Ship ship, int shipLength, GameBoard gameBoard) throws ConfigException {
-        int x = ship.getPosition().getX();
-        int y = ship.getPosition().getY();
+        int x = ship.getPosition().getX() - 1; // (1,A) represnets (0,0) on board
+        int y = ship.getPosition().getY() - 1;
 
         if (!GameBoard.isIndexInBoard(x, y, gameBoard.length)) {
             throw new ConfigException("Illegal position of ship on board.");
@@ -223,6 +230,8 @@ public class GameConfig implements Serializable {
         NavalFactory.GamePieceType type = NavalFactory.getPieceTypeFromString(ship.getDirection());
 
         Point position = new Point(x, y);
+
+        LOGGER.log(Level.FINER, "dealing with type: " + type.toString());
 
         switch (type) {
             case REGULAR_SHIP_COLUMN:
@@ -265,23 +274,6 @@ public class GameConfig implements Serializable {
         return null;
     }
 
-//    public void loadFromStringXml(final String xmlContent) throws ConfigException {
-//
-//
-//        final String fileName ="Temp_"+ tempFilesCounter + fileExtension;
-//        tempFilesCounter++;
-//
-//        BinFileReaderWriter binFileReaderWriter = new BinFileReaderWriter();
-//        try {
-//            binFileReaderWriter.saveXmlToFile(fileName,"saves", xmlContent );
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        // TODO: 05-Oct-17 continue this!
-//
-//    }
-
     public void load(File file) throws IOException, ConfigException, JAXBException {
         checkValidXMLFormat(file);
         generateGame(file);
@@ -305,17 +297,6 @@ public class GameConfig implements Serializable {
         JAXBContext jaxbContext = JAXBContext.newInstance(BattleShipGame.class);
         Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
         generatedGame = (BattleShipGame) jaxbUnmarshaller.unmarshal(file);
-    }
-
-    private void checkValidXMLStringFormat(String fileContent) throws ConfigException, IOException {
-        if (fileContent == null) {
-            throw new ConfigException("No file entered.");
-        }
-
-        final String fileStart = fileContent.substring(0, XML_START_VALID.length());
-        if (!fileStart.equals(XML_START_VALID)) {
-            throw new ConfigException("File is not a valid XML file.");
-        }
     }
 
     private void checkValidXMLFormat(File file) throws ConfigException, IOException {

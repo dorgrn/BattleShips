@@ -1,5 +1,3 @@
-// took from https://stackoverflow.com/questions/3028490/calling-a-java-servlet-from-javascript?rq=1
-
 // URIs
 const USERS_SERVLET_URI = '/gamesRoom/users';
 const GAME_RECORDS_SERVLET_URI = '/gamesRoom/gameRecords';

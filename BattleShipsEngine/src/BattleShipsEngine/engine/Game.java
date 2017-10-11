@@ -115,7 +115,8 @@ public class Game implements Serializable {
 
     public boolean canMineBePlaced(Point toPlace) {
         GameBoard primaryGrid = currentPlayer.getPrimaryGrid();
-        return GameBoard.isRectangleEmpty(toPlace, 1, 1, 1, 1, primaryGrid);
+
+        return GameBoard.isRectangleEmpty(toPlace, 1, 1, Ship.Direction.LEFT, primaryGrid);
     }
 
     public void placeMine(Point toPlace) {

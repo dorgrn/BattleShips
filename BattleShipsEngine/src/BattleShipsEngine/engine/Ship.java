@@ -1,15 +1,18 @@
 package BattleShipsEngine.engine;
+
 import generated.BattleShipGame;
+import generated.BattleShipGame.ShipTypes.ShipType;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import static BattleShipsEngine.engine.GameBoard.isIndexInBoard;
 
 public class Ship extends GamePiece {
     private final static int DEFAULT_SCORE = 1;
     private GameBoard board;
     private NavalFactory.GamePieceType shape;
-    private BattleShipGame.ShipTypes.ShipType shipType;
+    private ShipType shipType;
     private int score = DEFAULT_SCORE;
     private int length;
 
@@ -54,7 +57,7 @@ public class Ship extends GamePiece {
         return result;
     }
 
-    public void addAdditionalDetails(BattleShipGame.ShipTypes.ShipType shipType, int score) {
+    public void addAdditionalDetails(ShipType shipType, int score) {
         this.shipType = shipType;
         this.score = score;
     }
@@ -190,7 +193,7 @@ public class Ship extends GamePiece {
         this.score = score;
     }
 
-    public BattleShipGame.ShipTypes.ShipType getId() {
+    public ShipType getId() {
         return shipType;
     }
 
@@ -205,16 +208,24 @@ public class Ship extends GamePiece {
 
 
     public boolean isInVerticalPart(Point point) {
-        return point != null && body.containsKey(point) && (body.containsKey(new Point(point.getX() - 1, point.getY())) || body.containsKey(new Point(point.getX() + 1, point.getY())));
+        if (point == null || !body.containsKey(point)) {
+            return false;
+        }
 
+        return body.containsKey(new Point(point.getX() - 1, point.getY())) ||
+                body.containsKey(new Point(point.getX() + 1, point.getY()));
     }
 
     public boolean isInHorizontalPart(Point point) {
-        return point != null && body.containsKey(point) && (body.containsKey(new Point(point.getX(), point.getY() + 1)) || body.containsKey(new Point(point.getX(), point.getY() - 1)));
+        if (point == null || !body.containsKey(point)) {
+            return false;
+        }
 
+        return body.containsKey(new Point(point.getX(), point.getY() + 1)) ||
+                body.containsKey(new Point(point.getX(), point.getY() - 1));
     }
 
-    public BattleShipGame.ShipTypes.ShipType getShipType() {
+    public ShipType getShipType() {
         return shipType;
     }
 
