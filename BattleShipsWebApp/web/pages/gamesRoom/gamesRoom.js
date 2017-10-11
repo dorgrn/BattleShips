@@ -1,29 +1,3 @@
-// URIs
-const USERS_SERVLET_URI = '/gamesRoom/users';
-const GAME_RECORDS_SERVLET_URI = '/gamesRoom/gameRecords';
-const UPLOAD_XML_URI = '/readResource/readxml';
-const GET_USERNAME_URI = '/gamesRoom/currentUser';
-const LOGOUT_SERVLET_URI = '/registration/logout';
-const GAMES_ROOM_URI = '/pages/gamesRoom/gamesRoom.html';
-const SIGN_UP_URI = '/pages/signup/signup.html';
-const ADD_USER_URI = '/gamesRoom/gameRecords/addUser';
-
-// ATTRIBUTES
-const USERNAME_ATTRIBUTE = "USERNAME";
-const CALLER_URI_ATTRIBUTE = 'CALLER_URI';
-const GAME_NAME_ATTRIBUTE = 'GAME_NAME';
-const USER_ROLE_ATTRIBUTE = 'USER_ROLE';
-
-// CONSTS
-// USER_ROLE
-const USER_PARTICIPANT = 'PARTICIPANT';
-const USER_WATCHER = 'WATCHER';
-
-// GAME_STATUS
-const ONE_PLAYER = 'ONE_PLAYER';
-const EMPTY_GAME = 'EMPTY';
-const FULL_GAME = 'FULL';
-
 const INTERVAL_LENGTH = 5000;
 
 var intervalRefreshLists = null;
@@ -111,10 +85,18 @@ function ajaxJoinOrWatch(userRole, game) {
                 "GAME_NAME": game.gameName,
                 "USER_ROLE": userRole
             },
+            error: function (jqXHR, textStatus, errorThrown) {
+                if (jqXHR.status !== null && jqXHR.status === 400){
+                    if (jqXHR.getResponseHeader(ERROR_ATTRIBUTE)) {
+                        alert(jqXHR.getResponseHeader(ERROR_ATTRIBUTE)); // todo debug
+                    }
+                }
+            },
             success: function (data, textStatus, request) {
-                var errorHeader = request.getResponseHeader("username_error");
-                if (errorHeader !== null) {
-                    alert(errorHeader);
+                console.log("GOT TO RELOAD!"); // debug
+                if (request.getResponseHeader(REDIRECT_ATTRIBUTE) !== null){
+
+                    window.location.replace(request.getResponseHeader(REDIRECT_ATTRIBUTE));
                 }
             }
         }

@@ -50,11 +50,11 @@ public class GameRecordsManager {
         return Collections.unmodifiableSet(gameRecords);
     }
 
-    public void addPaticipantToGame(final User user, final GameRecord gameRecord) throws RecordAlreadyExistsException {
+    public void addParticipantToGame(final User user, final GameRecord gameRecord) throws RecordAlreadyExistsException {
         gameRecord.addParticipant(user);
     }
 
-    public void addWathcerToGame(final User user, final GameRecord gameRecord) throws RecordAlreadyExistsException {
+    public void addWatcherToGame(final User user, final GameRecord gameRecord) throws RecordAlreadyExistsException {
         gameRecord.addWatcher(user);
     }
 }

@@ -16,8 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import static com.BattleShipsWebApp.constants.Constants.GAME_ROOM_URI;
-
 
 @WebServlet(name = "AddUserServlet", urlPatterns = {"/gamesRoom/gameRecords/addUser"})
 public class AddUserServlet extends HttpServlet {
@@ -40,15 +38,17 @@ public class AddUserServlet extends HttpServlet {
         try {
 
             if (userRole.equals(Constants.USER_PARTICIPANT)) {
-                gameRecordsManager.addPaticipantToGame(user, gameRecord);
+                gameRecordsManager.addParticipantToGame(user, gameRecord);
             } else if (userRole.equals(Constants.USER_WATCHER)) {
-                gameRecordsManager.addWathcerToGame(user, gameRecord);
+                gameRecordsManager.addWatcherToGame(user, gameRecord);
             }
-            response.sendRedirect(Constants.GAME_URI);
+            //response.sendRedirect(Constants.GAME_URI);
+            response.addHeader(Constants.REDIRECT_ATTRIBUTE_NAME, Constants.GAME_URI);
 
         } catch (RecordAlreadyExistsException e) {
             System.err.println(e.getMessage());
-            response.setHeader(Constants.USERNAME_ERROR, "You are already signed up for this game!");
+            response.setStatus(400);
+            response.setHeader(Constants.ERROR_ATTRIBUTE_NAME,"You are already signed up for this game!");
         } finally {
             if (out != null) {
                 out.close();
@@ -70,6 +70,8 @@ public class AddUserServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
+
+
     }
 
     /**
