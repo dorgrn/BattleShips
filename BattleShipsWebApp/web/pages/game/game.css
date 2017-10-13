@@ -21,6 +21,7 @@
     float: left;
     border: 1px solid #204d74;
     height: 90%;
+    overflow: auto;
 }
 
 .battleshipHeader {
@@ -44,14 +45,14 @@
     float: left;
     padding-top: 15px;
     padding-left: 20px;
-    font-size: 16px;
+    font-size: 1px;
 }
 
 .trackingBoard {
     float: right;
     padding-top: 15px;
     padding-right: 20px;
-    font-size: 16px;
+    font-size: 1px;
 }
 
 .statistics {
@@ -61,39 +62,37 @@
 }
 
 .myBattleships {
-    height:200px;
-    width:180px;
+    height:60px;
+    width:250px;
     font-size: 12px;
     border:1px solid #204d74;
     overflow:auto;
-    float: left;
+    margin-left: 20px;
 }
 
 .opponentBattleships {
-    height:200px;
-    width:180px;
+    height:60px;
+    width:250px;
     font-size: 12px;
     border:1px solid #204d74;
     overflow:auto;
-    float: right;
+    margin-left: 20px;
 }
 
 .bottomTextsLine {
-    position: absolute;
-    line-height:500px;
+    float: left;
     margin-left:23px;
 }
 
 .commentsText {
-    position: absolute;
-    line-height:560px;
+    float: left;
     margin-left:23px;
     font-size: 12px;
 }
 
 #retireButton {
     font-size: 14px;
-    margin-left:1000px;
+    margin-left:980px;
     padding:5px 20px;
     border-radius: 12px;
     -webkit-transition-duration: 0.3s; /* Safari */
@@ -111,10 +110,12 @@ button{
 }
 
 #exitButton {
-    /*font-size: 14px;*/
-    /*//margin-left: 10px;*/
-    /*padding:5px 28px;*/
-    /*//border-radius: 12px;*/
+    font-size: 14px;
+    margin-left: 10px;
+    margin-right: 20px;
+    padding:5px 28px;
+    border-radius: 12px;
+    -webkit-transition-duration: 0.3s; /* Safari */
     transition-duration: 0.3s;
 }
 
