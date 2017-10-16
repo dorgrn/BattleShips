@@ -2,6 +2,7 @@ package com.BattleShipsWebApp.game.servlet;
 
 import com.BattleShipsWebApp.constants.Constants;
 import com.BattleShipsWebApp.utils.SessionUtils;
+import com.google.gson.Gson;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -16,7 +17,9 @@ public class GetCurrentGameNameServlet extends HttpServlet {
         try (PrintWriter out = response.getWriter()) {
             response.setContentType("application/json");
             final String gameName =SessionUtils.getSessionGameName(request);
-            out.println(gameName);
+            String json = new Gson().toJson(gameName);
+            out.println(json);
+            
             response.setHeader(Constants.SESSION_SAVED_GAME, gameName);
         }
 
