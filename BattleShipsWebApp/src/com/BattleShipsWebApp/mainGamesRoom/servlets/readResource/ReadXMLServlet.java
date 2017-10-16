@@ -89,7 +89,7 @@ public class ReadXMLServlet extends HttpServlet {
             gameRecordsManager.addGameRecord(gameRecord);
 
             // add game record to session
-            request.getSession().setAttribute(Constants.SESSION_SAVED_GAMES, new Gson().toJson(gameRecord));
+            request.getSession().setAttribute(Constants.SESSION_SAVED_GAME, new Gson().toJson(gameRecord));
             System.out.println("Config inserted successfully");
 
             success = true;

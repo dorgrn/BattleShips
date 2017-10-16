@@ -11,7 +11,7 @@ public class Constants {
     public static final String CHAT_VERSION_PARAMETER = "chatversion";
 
     public static final String CALLER_URI_ATTRIBUTE = "CALLER_URI";
-    public static final String SESSION_SAVED_GAMES = "SessionSavedGame";
+    public static final String SESSION_SAVED_GAME = "SessionSavedGame";
     public static final String GAME_NAME_ATTRIBUTE_NAME = "GAME_NAME";
     public static final String ERROR_ATTRIBUTE_NAME = "ERROR_NAME";
     public static final String USER_ROLE_ATTRIBUTE = "USER_ROLE";
