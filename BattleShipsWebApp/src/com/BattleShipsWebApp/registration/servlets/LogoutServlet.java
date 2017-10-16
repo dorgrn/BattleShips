@@ -23,7 +23,7 @@ public class LogoutServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
-        String usernameFromSession = SessionUtils.getUsername(request);
+        String usernameFromSession = SessionUtils.getSessionUsername(request);
         String callerUri = request.getParameter("CALLER_URI");
         String usernameFromParameter = request.getParameter(Constants.USERNAME);
         UserManager userManager = ServletUtils.getUserManager(getServletContext());

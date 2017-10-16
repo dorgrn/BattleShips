@@ -34,8 +34,7 @@ public class AddUserServlet extends HttpServlet {
         User user = userManager.getUser(usernameFromParameter);
         GameRecord gameRecord = gameRecordsManager.getGameByName(gameName);
 
-        PrintWriter out = response.getWriter();
-        try {
+        try (PrintWriter out = response.getWriter()) {
 
             if (userRole.equals(Constants.USER_PARTICIPANT)) {
                 gameRecordsManager.addParticipantToGame(user, gameRecord);
@@ -45,14 +44,18 @@ public class AddUserServlet extends HttpServlet {
             //response.sendRedirect(Constants.GAME_URI);
             response.addHeader(Constants.REDIRECT_ATTRIBUTE_NAME, Constants.GAME_URI);
 
+            //set these attributes to current session
+            request.getSession(true).setAttribute(Constants.GAME_NAME_ATTRIBUTE_NAME, gameName);
+            request.getSession(true).setAttribute(Constants.USER_ROLE_ATTRIBUTE, userRole);
+
+            //TODO DEBUG
+            System.out.println("The game " + gameName + " was saved on user " + user.getUserName() + "'s session! " +
+                    "He's a " + userRole);
+
         } catch (RecordAlreadyExistsException e) {
             System.err.println(e.getMessage());
             response.setStatus(400);
-            response.setHeader(Constants.ERROR_ATTRIBUTE_NAME,"You are already signed up for this game!");
-        } finally {
-            if (out != null) {
-                out.close();
-            }
+            response.setHeader(Constants.ERROR_ATTRIBUTE_NAME, "You are already signed up for this game!");
         }
     }
 

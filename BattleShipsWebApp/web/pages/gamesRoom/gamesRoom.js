@@ -75,6 +75,7 @@ function createJoinGameLink(game) {
     return result;
 }
 
+// this function adds user to the given game
 function ajaxJoinOrWatch(userRole, game) {
     $.ajax({
             type: 'GET',
@@ -88,12 +89,12 @@ function ajaxJoinOrWatch(userRole, game) {
             error: function (jqXHR, textStatus, errorThrown) {
                 if (jqXHR.status !== null && jqXHR.status === 400){
                     if (jqXHR.getResponseHeader(ERROR_ATTRIBUTE)) {
-                        alert(jqXHR.getResponseHeader(ERROR_ATTRIBUTE)); // todo debug
+                        alert(jqXHR.getResponseHeader(ERROR_ATTRIBUTE));
                     }
                 }
             },
             success: function (data, textStatus, request) {
-                console.log("GOT TO RELOAD!"); // debug
+                //console.log("GOT TO RELOAD!"); // debug
                 if (request.getResponseHeader(REDIRECT_ATTRIBUTE) !== null){
 
                     window.location.replace(request.getResponseHeader(REDIRECT_ATTRIBUTE));

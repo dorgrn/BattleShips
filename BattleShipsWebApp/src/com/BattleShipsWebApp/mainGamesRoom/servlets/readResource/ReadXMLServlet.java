@@ -74,7 +74,7 @@ public class ReadXMLServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
 
         final String gameName = request.getParameter(Constants.GAME_NAME_ATTRIBUTE_NAME);
-        final String creatorName = SessionUtils.getUsername(request);
+        final String creatorName = SessionUtils.getSessionUsername(request);
         final Part filePart = request.getPart("file"); // Retrieves <input type="file" name="file">
         final String fileName = getSubmittedFileName(filePart);
         boolean success = false;
@@ -92,10 +92,11 @@ public class ReadXMLServlet extends HttpServlet {
             request.getSession().setAttribute(Constants.SESSION_SAVED_GAMES, new Gson().toJson(gameRecord));
             System.out.println("Config inserted successfully");
 
-            /* TODO: 07-Oct-17 redirect after upload...
             success = true;
             response.sendRedirect(Constants.GAME_URI);
-            */
+            // TODO: 16-Oct-17 DEBUG
+            System.out.println("The game " + gameName + " was saved on session " + request.getSession().toString());
+
         } catch (RecordAlreadyExistsException e) {
             System.err.println(e.getMessage());
             response.setHeader("RecordAlreadyExistsException", gameName);
@@ -123,6 +124,10 @@ public class ReadXMLServlet extends HttpServlet {
     }// </editor-fold>
 
 
+    private static String readFromInputStream(InputStream inputStream) {
+        return new Scanner(inputStream).useDelimiter("\\Z").next();
+    }
+
     private String getAbsolutePathOfResource(String resource) {
         URL url = this.getClass().getResource(resource);
         return url != null ? url.getPath() : "?";
@@ -144,9 +149,7 @@ public class ReadXMLServlet extends HttpServlet {
         return fileContent.toString();
     }
 
-    private String readFromInputStream(InputStream inputStream) {
-        return new Scanner(inputStream).useDelimiter("\\Z").next();
-    }
+
 
     private String getResourceContent(String resource) {
         StringBuilder result = new StringBuilder();

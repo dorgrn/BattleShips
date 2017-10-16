@@ -30,7 +30,7 @@ public class LoginServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String usernameFromSession = SessionUtils.getUsername(request);
+        String usernameFromSession = SessionUtils.getSessionUsername(request);
         String usernameFromParameter = request.getParameter(Constants.USERNAME);
 
         UserManager userManager = ServletUtils.getUserManager(getServletContext());

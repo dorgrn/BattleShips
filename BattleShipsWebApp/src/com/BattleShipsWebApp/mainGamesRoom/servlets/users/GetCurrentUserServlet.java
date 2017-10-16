@@ -23,7 +23,7 @@ import java.io.PrintWriter;
 
             try (PrintWriter out = response.getWriter()){
                 JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("username", SessionUtils.getUsername(request));
+                jsonObject.addProperty("username", SessionUtils.getSessionUsername(request));
                 out.println(jsonObject);
                 out.flush();
             }
