@@ -27,7 +27,7 @@ public class GameRecordsServlets extends HttpServlet {
             Set<GameRecord> gameRecords = gameRecordsManager.getGameRecords();
             String json = gson.toJson(gameRecords);
             //DEBUG - check json:
-            // System.out.println(json);
+            System.out.println(json);
             out.println(json);
             out.flush();
         }

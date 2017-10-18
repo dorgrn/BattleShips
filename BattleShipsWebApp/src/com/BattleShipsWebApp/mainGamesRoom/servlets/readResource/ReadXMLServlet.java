@@ -1,6 +1,7 @@
 package com.BattleShipsWebApp.mainGamesRoom.servlets.readResource;
 
 import BattleShipsEngine.engine.ConfigException;
+import BattleShipsEngine.engine.Game;
 import BattleShipsEngine.engine.GameConfig;
 import com.BattleShipsWebApp.constants.Constants;
 import com.BattleShipsWebApp.exceptions.RecordAlreadyExistsException;
@@ -85,11 +86,14 @@ public class ReadXMLServlet extends HttpServlet {
         try {
             gameConfig.load(outputTempFile);
             GameRecordsManager gameRecordsManager = ServletUtils.getGameRecordsManager(getServletContext());
-            GameRecord gameRecord = new GameRecord(gameName, creatorName, gameConfig);
+            Game game = gameConfig.initiateGameFromGenerated();
+            GameRecord gameRecord = new GameRecord(gameName, creatorName, game, gameConfig);
             gameRecordsManager.addGameRecord(gameRecord);
 
             // add game record to session
-            request.getSession().setAttribute(Constants.SESSION_SAVED_GAME, new Gson().toJson(gameRecord));
+            String gson = new Gson().toJson(gameRecord);
+            System.out.println(gson);
+            request.getSession().setAttribute(Constants.SESSION_SAVED_GAME, gson);
             System.out.println("Config inserted successfully");
 
             success = true;

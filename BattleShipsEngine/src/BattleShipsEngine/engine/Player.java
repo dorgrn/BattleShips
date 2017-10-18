@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import static generated.BattleShipGame.*;
 
 public class Player implements Serializable {
-    private Game game;
+    //private Game game;
     private List<Mine> mines = new LinkedList<>();
     private LinkedList<Ship> ships = new LinkedList<>();
     private int amountOfMinesToPlace;
@@ -40,7 +40,7 @@ public class Player implements Serializable {
         shipsAmountByType = new Hashtable<>();
 
         initTrackingBoard();
-        this.game = game;
+        //this.game = game;
     }
 
     private static Type getPlayerTypeById(int id) {
@@ -63,7 +63,7 @@ public class Player implements Serializable {
         Player result = new Player(player.playerType);
         result.ships = player.ships;
         result.mines = player.mines;
-        result.game = player.game;
+        //result.game = player.game;
         result.primaryGrid = player.primaryGrid;
         result.playerType = player.playerType;
         result.hasWon = player.hasWon;

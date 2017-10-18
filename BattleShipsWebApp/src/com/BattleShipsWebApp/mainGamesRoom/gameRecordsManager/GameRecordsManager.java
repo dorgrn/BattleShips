@@ -1,5 +1,6 @@
 package com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager;
 
+import BattleShipsEngine.engine.Game;
 import BattleShipsEngine.engine.GameConfig;
 import com.BattleShipsWebApp.exceptions.RecordAlreadyExistsException;
 import com.BattleShipsWebApp.registration.users.User;
@@ -12,9 +13,9 @@ import java.util.Set;
 public class GameRecordsManager {
     private final Set<GameRecord> gameRecords = new HashSet<>(); // <game name, xml content>
 
-    public void addGameRecord(final String gameName, final String creatorName, GameConfig gameConfig)
+    public void addGameRecord(final String gameName, final String creatorName, Game game, GameConfig gameConfig)
             throws RecordAlreadyExistsException {
-        GameRecord record = new GameRecord(gameName, creatorName, gameConfig);
+        GameRecord record = new GameRecord(gameName, creatorName, game, gameConfig);
 
         if (gameRecords.contains(record)){
             throw new RecordAlreadyExistsException("in game records");

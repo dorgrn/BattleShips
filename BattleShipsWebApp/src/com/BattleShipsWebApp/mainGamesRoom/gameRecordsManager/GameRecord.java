@@ -1,5 +1,6 @@
 package com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager;
 
+import BattleShipsEngine.engine.Game;
 import BattleShipsEngine.engine.GameConfig;
 import com.BattleShipsWebApp.exceptions.RecordAlreadyExistsException;
 import com.BattleShipsWebApp.exceptions.RecordDoesnNotExistsException;
@@ -16,10 +17,12 @@ public class GameRecord {
     private transient final GameConfig gameConfig; // transient = not for serialization
     private final Set<User> participants;
     private final Set<User> watchers;
+    private final Game game;
     private final int boardSize;
 
-    public GameRecord(String gameName, String creatorName, GameConfig gameConfig) {
+    public GameRecord(String gameName, String creatorName, Game game, GameConfig gameConfig) {
         this.gameName = gameName;
+        this.game = game;
         this.creator = new User(creatorName);
         this.gameConfig = gameConfig;
         this.participants = new HashSet<>();
