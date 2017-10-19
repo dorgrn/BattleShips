@@ -5,12 +5,14 @@ import com.BattleShipsWebApp.utils.SessionUtils;
 import com.google.gson.Gson;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+@WebServlet(name = "GetCurrentGameNameServlet", urlPatterns = {"/gamesRoom/currentGameName"})
 public class GetCurrentGameNameServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -19,7 +21,8 @@ public class GetCurrentGameNameServlet extends HttpServlet {
             final String gameName =SessionUtils.getSessionGameName(request);
             String json = new Gson().toJson(gameName);
             out.println(json);
-            
+            out.flush();
+
             response.setHeader(Constants.SESSION_SAVED_GAME, gameName);
         }
 

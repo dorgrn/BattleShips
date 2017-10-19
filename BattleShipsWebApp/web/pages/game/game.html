@@ -2,50 +2,42 @@
 <html lang="en">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>BattlesShips</title>
+    <title>BattleShips</title>
     <link rel="stylesheet" href="../../common/w3.css">
     <link rel="stylesheet" href="game.css">
     <script src="/common/jquery-2.0.3.min.js"></script>
     <script src="game.js"></script>
-    <title>BattleShips game</title>
+    <script src="/common/ConstantsJS.js"></script>
 </head>
-<body onload="createBoardsBySize()" style="height:100%">
+<body style="height:100%">
     <div style="height:700px">
-        <!--$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ watchers $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$-->
         <div style="padding:1px 16px;" class="watchers">
+            <p id="myPlayerName" style="padding-top: 5px; font-size: 16px"></p>
+            <p style="padding-top: 1px; font-size: 12px">Opponent:</p>
+            <p id="opponentName" style="padding-top: 1px; font-size: 12px">None</p>
+            <p>&emsp;&emsp;</p>
             <table class="w3-table w3-striped">
                 <thead>
                 <tr class="w3-blue-gray">
                     <th style="padding-top:10px;">Watchers</th>
                 </tr>
                 </thead>
-                <tbody>
-                <tr>
-                    <th>Dor</th>
-                </tr>
-                <tr>
-                    <th>Roy</th>
-                </tr>
-                </tbody>
+                <tbody id="watchersTable"></tbody>
             </table>
         </div>
-        <!--$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ main $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$-->
         <div class="main">
             <div class="battleshipHeader">Battleship Game</div>
-            <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%% Battleship Board %%%%%%%%%%%%%%%%%%%%%%%%%% -->
             <table id="battleshipBoard" class="battleshipBoard"></table>
-            <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%% Tracking Board %%%%%%%%%%%%%%%%%%%%%%%%%% -->
             <table id="traceBoard" class="trackingBoard"></table>
-            <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%% Statistics %%%%%%%%%%%%%%%%%%%%%%%%%% -->
             <div class="statistics" style="padding-top: 5px;">
                 <p><b>Data & Statistics</b></p>
-                <p>Current Player</p>
-                <p>Player Score</p>
-                <p>Turns Completed</p>
-                <p>Total Hits</p>
-                <p>Total Misses</p>
-                <p>Average Time Per Move</p>
-                <p>Mines Left</p>
+                <p id="currentPlayer">Current Player</p>
+                <p id="playerScore">Player Score</p>
+                <p id="turnsCompleted">Turns Completed</p>
+                <p id="totalHits">Total Hits</p>
+                <p id="totalMisses">Total Misses</p>
+                <p id="timePerMove">Average Time Per Move</p>
+                <p id="minesLeft">Mines Left</p>
                 <p></p>
             </div>
             <div class="myBattleships" style="margin-top: 2em; margin-left: 2em;">
@@ -74,12 +66,12 @@
             </div>
             <div class="bottomTextsLine">
                 <p>&emsp;&emsp;</p>
-                <p>My Score: 0 &emsp;&emsp; Opponent's Score: 0 &emsp;&emsp; Time Passed: 0 &emsp;&emsp; Current Move Number: 0</p>
-                <p>Comments Line: ............</p>
+                <p id="generalData">My Score: 0 &emsp;&emsp; Opponent's Score: 0 &emsp;&emsp; Time Passed: 0 &emsp;&emsp; Current Move Number: 0</p>
+                <p id="commentsLine" style="color: red">Comments Line: ............</p>
             </div>
             <div style="float: right">
-                <button type="button" id="retireButton">Retire</button>
-                <button type="button" id="exitButton">Exit</button>
+                <button type="button" onclick="backToGamesRoom()" id="retireButton">Retire</button>
+                <button type="button" onclick="logout()" id="exitButton">Exit</button>
             </div>
         </div>
         <div class="chat">
