@@ -7,13 +7,19 @@ $(window).on('load', function () {
 
     intervalRefreshLists = setInterval(function () {
         // add any other updates you want here...
-        updateDataOnScreen();
+        var gameJson = localStorage.getItem("GAME_JSON");
+        if (gameJson !== null){
+            updateDataOnScreen(JSON.parse(gameJson));
+        }
+        else {
+            throw "Game not updated";
+        }
     }, INTERVAL_LENGTH);
 });
 
 function startGame() {
-    //ajaxGetCurrentUserName();
-    //ajaxGetCurrentUserType();
+    ajaxGetCurrentUserName();
+    ajaxGetCurrentUserType();
     ajaxGetAndInitCurrentGame();
 }
 
@@ -25,6 +31,7 @@ function ajaxGetCurrentUserName() {
         success: function (users) {
             $.each(users || [], function (index, username) {
                 $("#myPlayerName").text(username);
+                sessionStorage.setItem("PLAYER_NAME", username);
             });
         }
     });
@@ -38,6 +45,7 @@ function ajaxGetCurrentUserType() {
         success: function (users) {
             $.each(users || [], function (index, userType) {
                 $("#myPlayerType").text(userType);
+                sessionStorage.setItem("PLAYER_TYPE", userType);
             });
         }
     });
@@ -51,16 +59,17 @@ function ajaxGetAndInitCurrentGame() {
         cache: false,
         contentType: 'application/json; charset=utf-8',
         beforeSend: function () {
-            console.log("before");
+           // console.log("before");
         },
         success: function (game) {
-            console.log(game);
+            //console.log(game);
             initializeGame(JSON.parse(game));
         }
     });
 }
 
 function initializeGame(gameRecord) {
+    localStorage.setItem("GAME_JSON", JSON.stringify(gameRecord));
     createBoardsBySize(gameRecord.boardSize);
     ajaxGetCurrentUserName();
     updateDataOnScreen(gameRecord, $("#myPlayerName").text);
@@ -88,7 +97,7 @@ function createBoardsBySize(boardSize) {
 //TODO: break this function into smaller ones
 function updateDataOnScreen(gameRecord, username) {
     var currentGame = gameRecord.game;
-    console.log(currentGame);
+    //console.log(currentGame);
 
     // use of GameRecordsServlet json:
     $("#playerScore").text("Player Score: " + currentGame.currentPlayer.score);
