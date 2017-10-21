@@ -1,9 +1,10 @@
 package com.BattleShipsWebApp.mainGamesRoom.servlets.gamesManagement;
 
+import com.BattleShipsWebApp.constants.Constants;
 import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameRecord;
 import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameRecordsManager;
+import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameStatus;
 import com.BattleShipsWebApp.utils.ServletUtils;
-import com.google.gson.Gson;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,26 +12,28 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Set;
 
-@WebServlet(name = "GameRecordServlet", urlPatterns = {"/gamesRoom/gameRecords"})
-public class GameRecordsServlets extends HttpServlet {
+
+@WebServlet(name = "UpdateGameStatusServlet", urlPatterns = {"/gamesRoom/updateGameStatus"})
+public class UpdateGameStatusServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        response.setContentType("application/json");
+        // needed params
+        final String gameNameParameter = request.getParameter(Constants.GAME_NAME_ATTRIBUTE_NAME);
+        final GameStatus gameStatusParameter =
+                GameStatus.valueOf(request.getParameter(Constants.GAME_STATUS_ATTRIBUTE_NAME));
 
-        try (PrintWriter out = response.getWriter()) {
-            Gson gson = new Gson();
-            GameRecordsManager gameRecordsManager = ServletUtils.getGameRecordsManager(getServletContext());
-            Set<GameRecord> gameRecords = gameRecordsManager.getGameRecords();
-            String json = gson.toJson(gameRecords);
-            //DEBUG - check json:
-            //System.out.println(json);
-            out.println(json);
-            out.flush();
+        final GameRecordsManager gameRecordsManager = ServletUtils.getGameRecordsManager(getServletContext());
+
+        GameRecord gameRecord = gameRecordsManager.getGameByName(gameNameParameter);
+
+        if (gameRecord != null) {
+            gameRecord.setGameStatus(gameStatusParameter);
+        } else {
+            throw new ServletException("Game not found!");
         }
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -74,3 +77,4 @@ public class GameRecordsServlets extends HttpServlet {
     }// </editor-fold>
 
 }
+

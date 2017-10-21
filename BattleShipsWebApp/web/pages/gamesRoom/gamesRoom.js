@@ -2,6 +2,10 @@ const INTERVAL_LENGTH = 5000;
 
 var intervalRefreshLists = null;
 
+function joinCreatedGame(gameName){
+    console.log("helllo");
+}
+
 function ajaxCurrentUserName() {
     $.ajax({
         url: GET_USERNAME_URI,
@@ -15,68 +19,9 @@ function ajaxCurrentUserName() {
     });
 }
 
-function stopListsRefresh() {
-    if (intervalRefreshLists !== null) {
-        clearInterval(intervalRefreshLists);
-    }
-}
-
-function refreshGamesList(games) {
-    //clear all current users
-    var tableGame = $("#table_games");
-    tableGame.find("tr:gt(0)").remove(); // remove everything not in header of table
-
-    var rows = "";
-
-    //add rows to table
-    $.each(games || [], function (index, game) {
-        //console.log("Adding game #" + index + ": " + game.gameName);
-        rows += "<tr><td>" + game.gameName + "</td>" +
-            "<td>" + game.creator.username + "</td>" +
-            "<td>" + game.boardSize + "</td>" +
-            "<td>" + translateGameStatus(game.gameStatus) + "</td>" +
-            "<td>" + createJoinGameLink(game) + "</td></tr>";
-
-        tableGame.on('click', '.joinLink', function () {
-            joinGame(game);
-        });
-
-        tableGame.on('click', '.watchLink', function () {
-            watchGame(game);
-        });
-
-    });
-
-
-    $(rows).appendTo("#table_games tbody");
-}
-
-function createJoinGameLink(game) {
-    var result = "";
-    switch (game.gameStatus) {
-        case ONE_PLAYER:
-            result += "<a href='' onclick='return false;' class='joinLink'>"
-                + "Play" + "</a>";
-            break;
-        case FULL_GAME:
-            result += "<a href='' onclick='return false;' class='watchLink'>"
-                + "Watch" + "</a>";
-            break;
-        case EMPTY_GAME:
-            result += "-";
-            break;
-        default:
-            break;
-    }
-
-
-    //console.log("In crate game result is" + result);
-
-    return result;
-}
-
 // this function adds user to the given game
 function ajaxJoinOrWatch(userRole, game) {
+    console.log("got to join or wtch");
     $.ajax({
             type: 'GET',
             url: ADD_USER_URI,
@@ -93,15 +38,59 @@ function ajaxJoinOrWatch(userRole, game) {
                     }
                 }
             },
-            success: function (data, textStatus, request) {
-                //console.log("GOT TO RELOAD!"); // debug
-                if (request.getResponseHeader(REDIRECT_ATTRIBUTE) !== null){
-
-                    window.location.replace(request.getResponseHeader(REDIRECT_ATTRIBUTE));
-                }
+            success: function() {
+                var newGameStatus = getGameStatusAfterJoin(game.gameStatus);
+                ajaxUpdateGameStatus(game, newGameStatus);
             }
         }
     );
+}
+
+function ajaxUpdateGameStatus(game, newGameStatus) {
+    $.ajax({
+        type: 'POST',
+        url: UPDATE_GAME_STATUS_URI,
+        dataType: 'html',
+        data: { // should match Constants
+            "GAME_NAME": game.gameName,
+            "GAME_STATUS": newGameStatus
+        },
+        success: function (data, textStatus, request) {
+            console.log("got to success in ajax gameStatus");
+        }
+    });
+}
+
+function getGameStatusAfterJoin(gameStatus) {
+    switch (gameStatus){
+        case EMPTY_GAME:
+            return ONE_PLAYER;
+            break;
+        case ONE_PLAYER:
+            return FULL_GAME;
+            break;
+        case FULL_GAME:
+            throw "Can't add player to full game";
+            break;
+    }
+
+    return null;
+}
+
+function getGameStatusAfterExit(gameStatus) {
+    switch (gameStatus){
+        case EMPTY_GAME:
+            throw "Can't remove player from empty game";
+            break;
+        case ONE_PLAYER:
+            return EMPTY_GAME;
+            break;
+        case FULL_GAME:
+            return ONE_PLAYER;
+            break;
+    }
+
+    return null;
 }
 
 function joinGame(game) {
@@ -110,6 +99,7 @@ function joinGame(game) {
         return;
     }
 
+    console.log("joined to game" + game);
     ajaxJoinOrWatch(USER_PARTICIPANT, game);
 }
 
@@ -120,37 +110,6 @@ function watchGame(game) {
     }
 
     ajaxJoinOrWatch(USER_WATCHER, game);
-}
-
-function translateGameStatus(gameStatus) {
-    switch (gameStatus) {
-        case ONE_PLAYER:
-            return "One player waiting";
-            break;
-        case EMPTY_GAME:
-            return "Empty";
-            break;
-        case FULL_GAME:
-            return "Game is full";
-            break;
-    }
-
-    return "";
-}
-
-function refreshUsersList(users) {
-    //clear all current users
-    $("#table_users").find("tr:gt(0)").remove();
-
-
-    // rebuild the list of users: scan all users and add them to the list of users
-    var rows = "";
-    $.each(users || [], function (index, username) {
-        //console.log("Adding user #" + index + ": " + username);
-        rows += "<tr><td>" + username + "</td></tr>";
-    });
-
-    $(rows).appendTo("#table_users tbody");
 }
 
 function ajaxUsersList() {

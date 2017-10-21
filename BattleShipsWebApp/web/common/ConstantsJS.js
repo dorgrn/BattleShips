@@ -8,6 +8,7 @@ const GAMES_ROOM_URI = '/pages/gamesRoom/gamesRoom.html';
 const SIGN_UP_URI = '/pages/signup/signup.html';
 const ADD_USER_URI = '/gamesRoom/gameRecords/addUser';
 const GAME_URI = '/pages/game/game.html';
+const UPDATE_GAME_STATUS_URI = '/gamesRoom/updateGameStatus';
 
 // ATTRIBUTES
 const USERNAME_ATTRIBUTE = "USERNAME";

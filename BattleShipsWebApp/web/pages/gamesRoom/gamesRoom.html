@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="gamesRoom.css">
     <script src="/common/jquery-2.0.3.min.js"></script>
     <script src="gamesRoom.js"></script>
+    <script src="pageDisplay.js"></script>
     <script src="/common/ConstantsJS.js"></script>
 </head>
 
@@ -38,7 +39,7 @@
 
 <div class="uploadFile" style="float: left; padding-left: 10%; padding-right: 10%">
     <h3>Upload a new game: </h3><br/>
-    <form action="/readResource/readxml" onsubmit="refreshGamesList()" method="post" enctype="multipart/form-data">
+    <form action="/readResource/readxml" onsubmit="refreshLists();" method="post" enctype="multipart/form-data">
         <input id="uploadXMLInput" type="file" name="file" accept="text/xml" size="50" required/>
         <br/><h3>Enter wanted game name:</h3>
         <input id="uploadGameNameInput" type="text" name="GAME_NAME" required> <br/> <!-- name from Constants -->

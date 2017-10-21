@@ -1,19 +1,13 @@
 window.onload = startGame();
 
 function startGame() {
-    $.ajax({
-        url: '/gamesRoom/gameRecords',
-        dataType: 'json',
-        success: function (games) {
-            ajaxGetCurrentUserName();
-            ajaxGetAndInitCurrentGame(games);
-        }
-    });
+    ajaxGetCurrentUserName();
+    ajaxGetAndInitCurrentGame();
 }
 
 function ajaxGetCurrentUserName() {
     $.ajax({
-        url: GET_USERNAME_URI,
+        url: '/gamesRoom/currentUser',
         type: 'GET',
         contentType: 'application/json; charset=utf-8',
         success: function (users) {
@@ -24,86 +18,76 @@ function ajaxGetCurrentUserName() {
     });
 }
 
-function ajaxGetAndInitCurrentGame(games) {
+function ajaxGetAndInitCurrentGame() {
     $.ajax({
-        url: '/gamesRoom/currentGameName',
+        url: '/gamesRoom/currentGame',
         type: 'GET',
         contentType: 'application/json; charset=utf-8',
-        success: function (gameName) {
-            initializeGame(games, gameName);
+        success: function (game) {
+            initializeGame(JSON.parse(game));
         }
     });
 }
 
-function initializeGame(games, gameName) {
-    $.each(games || [], function (index, game) {
-        $.ajax({
-            url: '/gamesRoom/currentGameName',
-            dataType: 'json',
-            success: function () {
-                if (game.gameName === gameName){
-                    createBoardsBySize(game.boardSize);
-                    updateDataOnScreen(games, gameName);
-                }
-            }
-        });
-    });
+function initializeGame(gameRecord) {
+    createBoardsBySize(gameRecord.boardSize);
+    ajaxGetCurrentUserName();
+    updateDataOnScreen(gameRecord, $("#myPlayerName").text);
 }
 
 function createBoardsBySize(boardSize) {
     var i, j;
-    var multiplyConst = 0.02*(20-boardSize) + 1;
-    var buttonSize = 150*multiplyConst/boardSize;
+    var multiplyConst = 0.02 * (20 - boardSize) + 1;
+    var buttonSize = 150 * multiplyConst / boardSize;
     var paddingField = 'padding:' + buttonSize + 'px ';
     var table = "";
-    for (i=0; i<boardSize; i++){
+    for (i = 0; i < boardSize; i++) {
         table += "<tr>";
-        for(j=0; j<boardSize; j++){
+        for (j = 0; j < boardSize; j++) {
             table += "<th style='padding:0'" + ">" + "<button " + "style=" + paddingField + "></button>" + "</th>";
-            if (j === boardSize - 1) { table += "</tr>"; }
+            if (j === boardSize - 1) {
+                table += "</tr>";
+            }
         }
     }
     document.getElementById("battleshipBoard").innerHTML = table;
     document.getElementById("traceBoard").innerHTML = table;
 }
 
-function updateDataOnScreen(games, gameName) {
-    $.each(games || [], function (index, game) {
-        $.ajax({
-            url: '/gamesRoom/gameRecords',
-            dataType: 'json',
-            success: function () {
-                if (game.gameName === gameName){
-                    // use of GameRecordsServlet json:
-                    $("#currentPlayer").text("Current Player: " + game.game.currentPlayer.playerType);
-                    $("#playerScore").text("Player Score: " + game.game.currentPlayer.score);
-                    $("#turnsCompleted").text("Turn Number: " + game.game.currentPlayer.turnNumber);
-                    $("#totalHits").text("Total Hits: " + game.game.currentPlayer.hitAmount);
-                    $("#totalMisses").text("Total Misses: " + game.game.currentPlayer.missAmount);
-                    $("#timePerMove").text("Time Per Move: " + game.game.currentPlayer.totalTurnTime);
-                    $("#minesLeft").text("Mines Left: " + game.game.currentPlayer.amountOfMinesToPlace);
-                    var tab = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0";
-                    var currentTime = new Date().getTime();
-                    $("#generalData").text(game.participants[0]["username"] + "'s Score: " + game.game.player2.score + tab + (game.participants.length === 1 ? "" : game.participants[1]["username"] + "'s Score: " + game.game.player1.score + tab) + "Time Passed: " + (currentTime - game.game.startTime)/1000 + tab + "Total Turns Completed: " + game.game.turnsAmount);
-                    updateOpponentName(game.participants);
-                    updateWatchersTable(game.watchers);
-                    updateCommentsLine(game.participants.length);
-                    updateShipsData(game);
-                }
-            }
-        });
-    });
+function updateDataOnScreen(gameRecord, username) {
+    var currentGame = gameRecord.game;
+    console.log(currentGame);
+
+    // use of GameRecordsServlet json:
+    $("#playerScore").text("Player Score: " + currentGame.currentPlayer.score);
+    $("#turnsCompleted").text("Turn Number: " + currentGame.currentPlayer.turnNumber);
+    $("#totalHits").text("Total Hits: " + currentGame.currentPlayer.hitAmount);
+    $("#totalMisses").text("Total Misses: " + currentGame.currentPlayer.missAmount);
+    $("#timePerMove").text("Time Per Move: " + currentGame.currentPlayer.totalTurnTime);
+    $("#minesLeft").text("Mines Left: " + currentGame.currentPlayer.amountOfMinesToPlace);
+    var tab = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0";
+    var currentTime = new Date().getTime();
+    $("#generalData").text(gameRecord.participants[0]["username"] + "'s Score: " +
+        currentGame.player2.score + tab +
+        (gameRecord.participants.length === 1 ? "" : gameRecord.participants[1]["username"] + "'s Score: " +
+            gameRecord.game.player1.score + tab) +
+        "Time Passed: " + (currentTime - currentGame.startTime) / 1000 +
+        tab + "Total Turns Completed: " + gameRecord.turnsAmount);
+    updateOpponentName(gameRecord.participants);
+    updateWatchersTable(gameRecord.watchers);
+    updateCommentsLine(gameRecord.participants.length);
+    updateShipsData(gameRecord);
 }
 
 function updateOpponentName(participants) {
-    if (participants.length === 1){
+    if (participants.length === 1) {
         $("#opponentName").text("No opponent yet");
     }
-    else{ // 2 participants
-        if (document.getElementById("myPlayerName").innerHTML === participants[0]["username"]){
+    else { // 2 participants
+        if (document.getElementById("myPlayerName").innerHTML === participants[0]["username"]) {
             $("#opponentName").text(participants[1]["username"]);
         }
-        else{
+        else {
             $("#opponentName").text(participants[0]["username"]);
         }
     }
@@ -111,17 +95,17 @@ function updateOpponentName(participants) {
 
 function updateWatchersTable(watchers) {
     var table = "";
-    for(var i=0; i<watchers.length; i++){
+    for (var i = 0; i < watchers.length; i++) {
         table += "<tr><th>" + watchers[i]["username"] + "</th></tr>";
     }
     $("#watchersTable").text(table);
 }
 
 function updateCommentsLine(numOfParticipants) {
-    if (numOfParticipants === 1){
+    if (numOfParticipants === 1) {
         $("#commentsLine").text("Waiting for another player...");
     }
-    else{
+    else {
         $("#commentsLine").text("Game starts. Good luck!");
     }
 }

@@ -18,9 +18,8 @@ public class Constants {
     public static final String USER_PARTICIPANT = "PARTICIPANT";
     public static final String CURRENT_GAME_ATTRIBUTE_NAME = "CURRENT_GAME";
     public static final String USER_WATCHER = "WATCHER";
-
+    public static final String GAME_STATUS_ATTRIBUTE_NAME = "GAME_STATUS";
 
     public static final String GAME_ROOM_URI = "/pages/gamesRoom/gamesRoom.html";
     public static final String GAME_URI = "/pages/game/game.html";
-   ;
 }

@@ -7,6 +7,7 @@ import com.BattleShipsWebApp.constants.Constants;
 import com.BattleShipsWebApp.exceptions.RecordAlreadyExistsException;
 import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameRecord;
 import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameRecordsManager;
+import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameStatus;
 import com.BattleShipsWebApp.utils.InputFileUtils;
 import com.BattleShipsWebApp.utils.ServletUtils;
 import com.BattleShipsWebApp.utils.SessionUtils;
@@ -78,27 +79,28 @@ public class ReadXMLServlet extends HttpServlet {
         final String creatorName = SessionUtils.getSessionUsername(request);
         final Part filePart = request.getPart("file"); // Retrieves <input type="file" name="file">
         final String fileName = getSubmittedFileName(filePart);
-        boolean success = false;
+
         InputStream fileContent = filePart.getInputStream();
         File outputTempFile = InputFileUtils.inputStreamToFile(fileContent, "temp", "TEMP_" + tempSaveCounter++, "xml");
 
         GameConfig gameConfig = new GameConfig();
         try {
             gameConfig.load(outputTempFile);
-            GameRecordsManager gameRecordsManager = ServletUtils.getGameRecordsManager(getServletContext());
             Game game = gameConfig.initiateGameFromGenerated();
-            GameRecord gameRecord = new GameRecord(gameName, creatorName, game, gameConfig);
+
+            GameRecordsManager gameRecordsManager = ServletUtils.getGameRecordsManager(getServletContext());
+            GameRecord gameRecord = createGameRecord(gameName, creatorName, game);
             gameRecordsManager.addGameRecord(gameRecord);
 
             // add game record to session
             String gson = new Gson().toJson(gameRecord);
-            System.out.println(gson);
+            //System.out.println(gson);
+
             request.getSession().setAttribute(Constants.SESSION_SAVED_GAME, gson);
             System.out.println("Config inserted successfully");
+            response.setHeader("Successful", "");
 
-            success = true;
             response.sendRedirect(Constants.GAME_URI);
-            // TODO: 16-Oct-17 DEBUG
             System.out.println("The game " + gameName + " was saved on session " + request.getSession().toString());
 
         } catch (RecordAlreadyExistsException e) {
@@ -111,11 +113,15 @@ public class ReadXMLServlet extends HttpServlet {
             e.printStackTrace();
             response.setHeader("JAXBException", gameName);
         }
-
-        if (!success) {
-            response.sendRedirect(gamesRoomURI);
-        }
     }
+
+    private GameRecord createGameRecord(String gameName, String creatorName, Game game) throws RecordAlreadyExistsException {
+        GameRecord gameRecord = new GameRecord(gameName, creatorName, game);
+        gameRecord.setGameStatus(GameStatus.ONE_PLAYER);
+
+        return gameRecord;
+    }
+
 
     /**
      * Returns a short description of the servlet.
@@ -152,7 +158,6 @@ public class ReadXMLServlet extends HttpServlet {
 
         return fileContent.toString();
     }
-
 
 
     private String getResourceContent(String resource) {

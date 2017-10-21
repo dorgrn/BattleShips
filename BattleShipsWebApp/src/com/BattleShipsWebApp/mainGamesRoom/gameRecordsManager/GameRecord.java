@@ -13,22 +13,22 @@ import java.util.Set;
 public class GameRecord {
     private final String gameName;
     private final User creator;
-    private final GameStatus gameStatus = GameStatus.ONE_PLAYER;
-    private transient final GameConfig gameConfig; // transient = not for serialization
+    private  GameStatus gameStatus = GameStatus.EMPTY;
+  //  private transient final GameConfig gameConfig; // transient = not for serialization
     private final Set<User> participants;
     private final Set<User> watchers;
     private final Game game;
     private final int boardSize;
 
-    public GameRecord(String gameName, String creatorName, Game game, GameConfig gameConfig) {
+    public GameRecord(String gameName, String creatorName, Game game) {
         this.gameName = gameName;
         this.game = game;
         this.creator = new User(creatorName);
-        this.gameConfig = gameConfig;
+       // this.gameConfig = gameConfig;
         this.participants = new HashSet<>();
         participants.add(creator);
         this.watchers = new HashSet<>();
-        this.boardSize = gameConfig.getGame().getBoardSize();
+        this.boardSize = game.getBoardSize();
     }
 
     public String getGameName() {
@@ -39,9 +39,9 @@ public class GameRecord {
         return creator;
     }
 
-    public GameConfig getGameConfig() {
-        return gameConfig;
-    }
+//    public GameConfig getGameConfig() {
+//        return gameConfig;
+//    }
 
     public Set<User> getParticipants() {
         return Collections.unmodifiableSet(participants);
@@ -96,5 +96,9 @@ public class GameRecord {
     @Override
     public int hashCode() {
         return gameName.hashCode();
+    }
+
+    public void setGameStatus(GameStatus gameStatus) {
+        this.gameStatus = gameStatus;
     }
 }

@@ -12,18 +12,18 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet(name = "GetCurrentGameNameServlet", urlPatterns = {"/gamesRoom/currentGameName"})
-public class GetCurrentGameNameServlet extends HttpServlet {
+@WebServlet(name = "GetCurrentGameServlet", urlPatterns = {"/gamesRoom/currentGame"})
+public class GetCurrentGameServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try (PrintWriter out = response.getWriter()) {
             response.setContentType("application/json");
-            final String gameName =SessionUtils.getSessionGameName(request);
-            String json = new Gson().toJson(gameName);
+            final String gameJson = SessionUtils.getSessionGame(request);
+            String json = new Gson().toJson(gameJson);
             out.println(json);
             out.flush();
 
-            response.setHeader(Constants.SESSION_SAVED_GAME, gameName);
+            response.setHeader(Constants.SESSION_SAVED_GAME, gameJson);
         }
 
 

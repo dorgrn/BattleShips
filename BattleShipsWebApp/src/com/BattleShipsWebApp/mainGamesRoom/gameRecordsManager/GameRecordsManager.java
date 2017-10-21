@@ -13,9 +13,9 @@ import java.util.Set;
 public class GameRecordsManager {
     private final Set<GameRecord> gameRecords = new HashSet<>(); // <game name, xml content>
 
-    public void addGameRecord(final String gameName, final String creatorName, Game game, GameConfig gameConfig)
+    public void addGameRecord(final String gameName, final String creatorName, Game game)
             throws RecordAlreadyExistsException {
-        GameRecord record = new GameRecord(gameName, creatorName, game, gameConfig);
+        GameRecord record = new GameRecord(gameName, creatorName, game);
 
         if (gameRecords.contains(record)){
             throw new RecordAlreadyExistsException("in game records");

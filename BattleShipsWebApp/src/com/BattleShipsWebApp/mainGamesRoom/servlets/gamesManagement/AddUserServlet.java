@@ -48,9 +48,10 @@ public class AddUserServlet extends HttpServlet {
             request.getSession(true).setAttribute(Constants.GAME_NAME_ATTRIBUTE_NAME, gameName);
             request.getSession(true).setAttribute(Constants.USER_ROLE_ATTRIBUTE, userRole);
 
+            /*
             //TODO DEBUG
             System.out.println("The game " + gameName + " was saved on user " + user.getUserName() + "'s session! " +
-                    "He's a " + userRole);
+                    "He's a " + userRole);*/
 
         } catch (RecordAlreadyExistsException e) {
             System.err.println(e.getMessage());
