@@ -12,8 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet(name = "GetCurrentGameServlet", urlPatterns = {"/gamesRoom/currentGame"})
-public class GetCurrentGameServlet extends HttpServlet {
+@WebServlet(name = "GetCurrentRecordGameServlet", urlPatterns = {"/game/currentGameRecord"})
+public class GetCurrentGameRecordServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try (PrintWriter out = response.getWriter()) {

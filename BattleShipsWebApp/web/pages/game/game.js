@@ -1,8 +1,19 @@
-window.onload = startGame();
+const INTERVAL_LENGTH = 5000;
+
+var intervalRefreshLists = null;
+
+$(window).on('load', function () {
+    startGame();
+
+    intervalRefreshLists = setInterval(function () {
+        // add any other updates you want here...
+        updateDataOnScreen();
+    }, INTERVAL_LENGTH);
+});
 
 function startGame() {
-    ajaxGetCurrentUserName();
-    ajaxGetCurrentUserType();
+    //ajaxGetCurrentUserName();
+    //ajaxGetCurrentUserType();
     ajaxGetAndInitCurrentGame();
 }
 
@@ -35,10 +46,15 @@ function ajaxGetCurrentUserType() {
 
 function ajaxGetAndInitCurrentGame() {
     $.ajax({
-        url: '/gamesRoom/currentGame',
+        url: '/game/currentGameRecord',
         type: 'GET',
+        cache: false,
         contentType: 'application/json; charset=utf-8',
+        beforeSend: function () {
+            console.log("before");
+        },
         success: function (game) {
+            console.log(game);
             initializeGame(JSON.parse(game));
         }
     });

@@ -7,6 +7,7 @@ import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameRecordsManager
 import com.BattleShipsWebApp.registration.users.User;
 import com.BattleShipsWebApp.registration.users.UserManager;
 import com.BattleShipsWebApp.utils.ServletUtils;
+import com.google.gson.Gson;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,7 +15,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 
 @WebServlet(name = "AddUserServlet", urlPatterns = {"/gamesRoom/gameRecords/addUser"})
@@ -35,7 +35,7 @@ public class AddUserServlet extends HttpServlet {
         User user = userManager.getUser(usernameFromParameter);
         GameRecord gameRecord = gameRecordsManager.getGameByName(gameName);
 
-        try (PrintWriter out = response.getWriter()) {
+        try {
 
             if (userRole.equals(Constants.USER_PARTICIPANT)) {
                 gameRecordsManager.addParticipantToGame(user, gameRecord);
@@ -49,6 +49,7 @@ public class AddUserServlet extends HttpServlet {
             request.getSession(true).setAttribute(Constants.GAME_NAME_ATTRIBUTE_NAME, gameName);
             request.getSession(true).setAttribute(Constants.PLAYER_TYPE_ATTRIBUTE, playerType);
             request.getSession(true).setAttribute(Constants.USER_ROLE_ATTRIBUTE, userRole);
+            request.getSession(true).setAttribute(Constants.SESSION_SAVED_GAME, new Gson().toJson(gameRecord));
 
             /*
             //TODO DEBUG
