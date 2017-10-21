@@ -30,6 +30,7 @@ public class AddUserServlet extends HttpServlet {
         final String usernameFromParameter = request.getParameter(Constants.USERNAME_ATTRIBUTE);
         final String gameName = request.getParameter(Constants.GAME_NAME_ATTRIBUTE_NAME);
         final String userRole = request.getParameter(Constants.USER_ROLE_ATTRIBUTE);
+        final String playerType = request.getParameter(Constants.PLAYER_TYPE_ATTRIBUTE);
 
         User user = userManager.getUser(usernameFromParameter);
         GameRecord gameRecord = gameRecordsManager.getGameByName(gameName);
@@ -46,6 +47,7 @@ public class AddUserServlet extends HttpServlet {
 
             //set these attributes to current session
             request.getSession(true).setAttribute(Constants.GAME_NAME_ATTRIBUTE_NAME, gameName);
+            request.getSession(true).setAttribute(Constants.PLAYER_TYPE_ATTRIBUTE, playerType);
             request.getSession(true).setAttribute(Constants.USER_ROLE_ATTRIBUTE, userRole);
 
             /*

@@ -1,9 +1,9 @@
 package com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager;
 
 import BattleShipsEngine.engine.Game;
-import BattleShipsEngine.engine.GameConfig;
+import BattleShipsEngine.engine.Player;
 import com.BattleShipsWebApp.exceptions.RecordAlreadyExistsException;
-import com.BattleShipsWebApp.exceptions.RecordDoesnNotExistsException;
+import com.BattleShipsWebApp.exceptions.RecordDoesNotExistsException;
 import com.BattleShipsWebApp.registration.users.User;
 
 import java.util.Collections;
@@ -14,7 +14,6 @@ public class GameRecord {
     private final String gameName;
     private final User creator;
     private  GameStatus gameStatus = GameStatus.EMPTY;
-  //  private transient final GameConfig gameConfig; // transient = not for serialization
     private final Set<User> participants;
     private final Set<User> watchers;
     private final Game game;
@@ -23,8 +22,7 @@ public class GameRecord {
     public GameRecord(String gameName, String creatorName, Game game) {
         this.gameName = gameName;
         this.game = game;
-        this.creator = new User(creatorName);
-       // this.gameConfig = gameConfig;
+        this.creator = new User(creatorName, Player.Type.PLAYER_ONE); // creator is regarded as player one
         this.participants = new HashSet<>();
         participants.add(creator);
         this.watchers = new HashSet<>();
@@ -38,10 +36,6 @@ public class GameRecord {
     public User getCreator() {
         return creator;
     }
-
-//    public GameConfig getGameConfig() {
-//        return gameConfig;
-//    }
 
     public Set<User> getParticipants() {
         return Collections.unmodifiableSet(participants);
@@ -67,17 +61,17 @@ public class GameRecord {
         watchers.add(user);
     }
 
-    public void removeParticipant(User user) throws RecordDoesnNotExistsException {
+    public void removeParticipant(User user) throws RecordDoesNotExistsException {
         if (!participants.contains(user)){
-            throw new RecordDoesnNotExistsException("User is not a participant! " + user.getUserName());
+            throw new RecordDoesNotExistsException("User is not a participant! " + user.getUserName());
         }
 
         participants.remove(user);
     }
 
-    public void removeWatcher(User user) throws RecordDoesnNotExistsException {
+    public void removeWatcher(User user) throws RecordDoesNotExistsException {
         if (!watchers.contains(user)){
-            throw new RecordDoesnNotExistsException("User is not a watcher! " + user.getUserName());
+            throw new RecordDoesNotExistsException("User is not a watcher! " + user.getUserName());
         }
 
         watchers.remove(user);

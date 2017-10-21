@@ -2,6 +2,7 @@ window.onload = startGame();
 
 function startGame() {
     ajaxGetCurrentUserName();
+    ajaxGetCurrentUserType();
     ajaxGetAndInitCurrentGame();
 }
 
@@ -17,6 +18,20 @@ function ajaxGetCurrentUserName() {
         }
     });
 }
+
+function ajaxGetCurrentUserType() {
+    $.ajax({
+        url: '/gamesRoom/currentUserType',
+        type: 'GET',
+        contentType: 'application/json; charset=utf-8',
+        success: function (users) {
+            $.each(users || [], function (index, userType) {
+                $("#myPlayerType").text(userType);
+            });
+        }
+    });
+}
+
 
 function ajaxGetAndInitCurrentGame() {
     $.ajax({
@@ -54,6 +69,7 @@ function createBoardsBySize(boardSize) {
     document.getElementById("traceBoard").innerHTML = table;
 }
 
+//TODO: break this function into smaller ones
 function updateDataOnScreen(gameRecord, username) {
     var currentGame = gameRecord.game;
     console.log(currentGame);
@@ -78,6 +94,7 @@ function updateDataOnScreen(gameRecord, username) {
     updateCommentsLine(gameRecord.participants.length);
     updateShipsData(gameRecord);
 }
+
 
 function updateOpponentName(participants) {
     if (participants.length === 1) {

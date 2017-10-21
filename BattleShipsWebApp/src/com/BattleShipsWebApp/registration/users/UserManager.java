@@ -1,5 +1,7 @@
 package com.BattleShipsWebApp.registration.users;
 
+import BattleShipsEngine.engine.Player;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
@@ -12,8 +14,8 @@ public class UserManager {
         this.usersSet = new HashSet<>();
     }
 
-    public void addUser(String username) {
-        usersSet.add(new User(username));
+    public void addUser(String username, Player.Type playerType) {
+        usersSet.add(new User(username, playerType));
     }
 
     public void removeUser(final String username ){

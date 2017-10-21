@@ -2,9 +2,13 @@ const INTERVAL_LENGTH = 5000;
 
 var intervalRefreshLists = null;
 
-function joinCreatedGame(gameName){
-    console.log("helllo");
-}
+$(window).on('load', function () {
+    ajaxCurrentUserName();
+
+    intervalRefreshLists = setInterval(function () {
+        refreshLists()
+    }, INTERVAL_LENGTH);
+});
 
 function ajaxCurrentUserName() {
     $.ajax({
@@ -20,14 +24,15 @@ function ajaxCurrentUserName() {
 }
 
 // this function adds user to the given game
-function ajaxJoinOrWatch(userRole, game) {
-    console.log("got to join or wtch");
+function ajaxJoinOrWatch(userRole, playerType, game) {
+    //console.log("got to join or wtch");
     $.ajax({
             type: 'GET',
             url: ADD_USER_URI,
             dataType: 'html',
             data: { // should match Constants
                 "USERNAME": $("#usernameNav").text(),
+                "PLAYER_TYPE": playerType,
                 "GAME_NAME": game.gameName,
                 "USER_ROLE": userRole
             },
@@ -41,6 +46,7 @@ function ajaxJoinOrWatch(userRole, game) {
             success: function() {
                 var newGameStatus = getGameStatusAfterJoin(game.gameStatus);
                 ajaxUpdateGameStatus(game, newGameStatus);
+                window.location.replace(GAME_URI);
             }
         }
     );
@@ -56,60 +62,49 @@ function ajaxUpdateGameStatus(game, newGameStatus) {
             "GAME_STATUS": newGameStatus
         },
         success: function (data, textStatus, request) {
-            console.log("got to success in ajax gameStatus");
+            //console.log("got to success in ajax gameStatus");
         }
     });
 }
 
-function getGameStatusAfterJoin(gameStatus) {
-    switch (gameStatus){
-        case EMPTY_GAME:
-            return ONE_PLAYER;
-            break;
-        case ONE_PLAYER:
-            return FULL_GAME;
-            break;
-        case FULL_GAME:
-            throw "Can't add player to full game";
-            break;
-    }
-
-    return null;
-}
-
-function getGameStatusAfterExit(gameStatus) {
-    switch (gameStatus){
-        case EMPTY_GAME:
-            throw "Can't remove player from empty game";
-            break;
-        case ONE_PLAYER:
-            return EMPTY_GAME;
-            break;
-        case FULL_GAME:
-            return ONE_PLAYER;
-            break;
-    }
-
-    return null;
-}
-
 function joinGame(game) {
     // check that game can be joined
-    if (game.gameStatus !== ONE_PLAYER) {
-        return;
+    switch (game.gameStatus){
+        case FULL_GAME:
+            throw "cant join a full game";
+            break;
+        case EMPTY_GAME:
+            ajaxJoinOrWatch(USER_PARTICIPANT, PLAYER_ONE, game);
+            break;
+        case ONE_PLAYER:
+            ajaxJoinOrWatch(USER_PARTICIPANT, PLAYER_TWO, game);
+            break;
+        default:
+            throw "unexpected value in joinGame";
+            break;
     }
 
     console.log("joined to game" + game);
-    ajaxJoinOrWatch(USER_PARTICIPANT, game);
 }
 
 function watchGame(game) {
     // check that game can be watched
-    if (game.gameStatus !== FULL_GAME) {
-        return;
+    switch (game.gameStatus){
+        case FULL_GAME:
+            throw "cant join a full game";
+            break;
+        case EMPTY_GAME:
+            ajaxJoinOrWatch(USER_WATCHER, PLAYER_ONE, game);
+            break;
+        case ONE_PLAYER:
+            ajaxJoinOrWatch(USER_WATCHER, PLAYER_TWO, game);
+            break;
+        default:
+            throw "unexpected value in watchGame";
+            break;
     }
 
-    ajaxJoinOrWatch(USER_WATCHER, game);
+    console.log("watcher added to game" + game);
 }
 
 function ajaxUsersList() {
@@ -152,10 +147,34 @@ function logout() {
     });
 }
 
-$(window).on('load', function () {
-    ajaxCurrentUserName();
+function getGameStatusAfterJoin(gameStatus) {
+    switch (gameStatus){
+        case EMPTY_GAME:
+            return ONE_PLAYER;
+            break;
+        case ONE_PLAYER:
+            return FULL_GAME;
+            break;
+        case FULL_GAME:
+            throw "Can't add player to full game";
+            break;
+    }
 
-    intervalRefreshLists = setInterval(function () {
-        refreshLists()
-    }, INTERVAL_LENGTH);
-});
+    return null;
+}
+
+function getGameStatusAfterExit(gameStatus) {
+    switch (gameStatus){
+        case EMPTY_GAME:
+            throw "Can't remove player from empty game";
+            break;
+        case ONE_PLAYER:
+            return EMPTY_GAME;
+            break;
+        case FULL_GAME:
+            return ONE_PLAYER;
+            break;
+    }
+
+    return null;
+}

@@ -33,7 +33,7 @@ public class LogoutServlet extends HttpServlet {
             response.sendRedirect(callerUri);
         }
 
-        if (!userManager.isUserExists(new User(usernameFromParameter))) { // user already exists - show user's gamesRoom (bonus)
+        if (!userManager.isUserExists(new User(usernameFromParameter, null))) { // user already exists - show user's gamesRoom (bonus)
             response.setHeader(Constants.USERNAME_ERROR, "user name isn't in database");
             response.sendRedirect(callerUri);
             // getServletContext().getRequestDispatcher(LOGIN_ERROR_URL).forward(request, response);

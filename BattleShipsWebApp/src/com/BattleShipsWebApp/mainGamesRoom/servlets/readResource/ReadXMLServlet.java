@@ -3,6 +3,7 @@ package com.BattleShipsWebApp.mainGamesRoom.servlets.readResource;
 import BattleShipsEngine.engine.ConfigException;
 import BattleShipsEngine.engine.Game;
 import BattleShipsEngine.engine.GameConfig;
+import BattleShipsEngine.engine.Player;
 import com.BattleShipsWebApp.constants.Constants;
 import com.BattleShipsWebApp.exceptions.RecordAlreadyExistsException;
 import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameRecord;
@@ -12,6 +13,7 @@ import com.BattleShipsWebApp.utils.InputFileUtils;
 import com.BattleShipsWebApp.utils.ServletUtils;
 import com.BattleShipsWebApp.utils.SessionUtils;
 import com.google.gson.Gson;
+import sun.security.krb5.Config;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -31,37 +33,7 @@ import java.util.Scanner;
 @WebServlet(name = "ReadXMLServlet", urlPatterns = {"/readResource/readxml"})
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 5 * 5)
 public class ReadXMLServlet extends HttpServlet {
-    private static final String gamesRoomURI = "/pages/gamesRoom/gamesRoom.html";
     private int tempSaveCounter = 0;
-
-
-    private static String getSubmittedFileName(Part part) {
-        for ( String cd : part.getHeader("content-disposition").split(";") ) {
-            if (cd.trim().startsWith("filename")) {
-                String fileName = cd.substring(cd.indexOf('=') + 1).trim().replace("\"", "");
-                return fileName.substring(fileName.lastIndexOf('/') + 1).substring(fileName.lastIndexOf('\\') + 1); // MSIE fix.
-            }
-        }
-        return null;
-    }
-
-// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        // only POST should be used
-        doPost(request, response);
-    }
-
     /**
      * Handles the HTTP <code>POST</code> method.
      *
@@ -88,8 +60,10 @@ public class ReadXMLServlet extends HttpServlet {
             gameConfig.load(outputTempFile);
             Game game = gameConfig.initiateGameFromGenerated();
 
+
             GameRecordsManager gameRecordsManager = ServletUtils.getGameRecordsManager(getServletContext());
-            GameRecord gameRecord = createGameRecord(gameName, creatorName, game);
+            // is creator
+            GameRecord gameRecord = createGameRecord(gameName, creatorName, Player.Type.PLAYER_ONE, game);
             gameRecordsManager.addGameRecord(gameRecord);
 
             // add game record to session
@@ -97,25 +71,22 @@ public class ReadXMLServlet extends HttpServlet {
             //System.out.println(gson);
 
             request.getSession().setAttribute(Constants.SESSION_SAVED_GAME, gson);
-            System.out.println("Config inserted successfully");
-            response.setHeader("Successful", "");
+            request.getSession().setAttribute(Constants.PLAYER_TYPE_ATTRIBUTE, Player.Type.PLAYER_ONE);
+            //DEBUG: System.out.println("Config inserted successfully");
 
             response.sendRedirect(Constants.GAME_URI);
-            System.out.println("The game " + gameName + " was saved on session " + request.getSession().toString());
+            //DEBUG: System.out.println("The game " + gameName + " was saved on session " + request.getSession().toString());
 
-        } catch (RecordAlreadyExistsException e) {
+        } catch (RecordAlreadyExistsException | ConfigException e) {
             System.err.println(e.getMessage());
-            response.setHeader("RecordAlreadyExistsException", gameName);
-        } catch (ConfigException e) {
-            System.err.println(e.getMessage());
-            response.setHeader("ConfigException", gameName);
+            response.setHeader(e.getClass().getSimpleName(), gameName);
         } catch (JAXBException e) {
             e.printStackTrace();
             response.setHeader("JAXBException", gameName);
         }
     }
 
-    private GameRecord createGameRecord(String gameName, String creatorName, Game game) throws RecordAlreadyExistsException {
+    private GameRecord createGameRecord(String gameName, String creatorName, Player.Type playerType, Game game) throws RecordAlreadyExistsException {
         GameRecord gameRecord = new GameRecord(gameName, creatorName, game);
         gameRecord.setGameStatus(GameStatus.ONE_PLAYER);
 
@@ -171,6 +142,35 @@ public class ReadXMLServlet extends HttpServlet {
             return "Error: Failed to read file!";
         }
         return result.toString();
+    }
+
+
+
+    private static String getSubmittedFileName(Part part) {
+        for ( String cd : part.getHeader("content-disposition").split(";") ) {
+            if (cd.trim().startsWith("filename")) {
+                String fileName = cd.substring(cd.indexOf('=') + 1).trim().replace("\"", "");
+                return fileName.substring(fileName.lastIndexOf('/') + 1).substring(fileName.lastIndexOf('\\') + 1); // MSIE fix.
+            }
+        }
+        return null;
+    }
+
+// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request  servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException      if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // only POST should be used
+        doPost(request, response);
     }
 
 

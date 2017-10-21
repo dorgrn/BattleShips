@@ -6,6 +6,7 @@ public class Constants {
     public static final String USERNAME_ALERT = "USERNAME_ALERT";
     public static final String USERNAME_ATTRIBUTE = "USERNAME";
     public static final String REDIRECT_ATTRIBUTE_NAME = "REDIRECT";
+    public static final String PLAYER_TYPE_ATTRIBUTE = "PLAYER_TYPE";
 
     public static final String CHAT_PARAMETER = "userstring";
     public static final String CHAT_VERSION_PARAMETER = "chatversion";
@@ -22,4 +23,5 @@ public class Constants {
 
     public static final String GAME_ROOM_URI = "/pages/gamesRoom/gamesRoom.html";
     public static final String GAME_URI = "/pages/game/game.html";
+
 }

@@ -42,7 +42,7 @@ public class LoginServlet extends HttpServlet {
             } else { // signup
                 //normalize the username value
                 usernameFromParameter = usernameFromParameter.trim();
-                if (userManager.isUserExists(new User(usernameFromParameter))) {
+                if (userManager.isUserExists(new User(usernameFromParameter, null))) {
                     usernameExists(request, response, usernameFromParameter);
                 } else {
                     signupUser(request, response, usernameFromParameter, userManager);
@@ -74,7 +74,7 @@ public class LoginServlet extends HttpServlet {
 
     private void signupUser(HttpServletRequest request, HttpServletResponse response, String usernameFromParameter, UserManager userManager) throws IOException {
         //add the new user to the users list
-        userManager.addUser(usernameFromParameter);
+        userManager.addUser(usernameFromParameter, null);
         request.getSession(true).setAttribute(Constants.USERNAME, usernameFromParameter);
         //redirect the request to the chat room - in order to actually change the URL
         System.out.println("On login, request URI is: " + request.getRequestURI());
