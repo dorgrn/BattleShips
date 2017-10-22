@@ -7,9 +7,10 @@ $(window).on('load', function () {
 
     intervalRefreshLists = setInterval(function () {
         // add any other updates you want here...
-        var gameJson = localStorage.getItem("GAME_JSON");
+        ajaxUpdateCurrentGame();
+        var gameJson = JSON.parse(localStorage.getItem("GAME_JSON"));
         if (gameJson !== null){
-            updateDataOnScreen(JSON.parse(gameJson));
+
         }
         else {
             throw "Game not updated";
@@ -64,6 +65,21 @@ function ajaxGetAndInitCurrentGame() {
         success: function (game) {
             //console.log(game);
             initializeGame(JSON.parse(game));
+        }
+    });
+}
+
+function ajaxUpdateCurrentGame() {
+    $.ajax({
+        url: '/game/currentGameRecord',
+        type: 'GET',
+        cache: false,
+        contentType: 'application/json; charset=utf-8',
+        beforeSend: function () {
+            // console.log("before");
+        },
+        success: function (gameRecord) {
+            updateDataOnScreen(gameRecord);
         }
     });
 }
