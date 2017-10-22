@@ -14,13 +14,6 @@ $(window).on('load', function () {
     intervalRefreshLists = setInterval(function () {
         // add any other updates you want here...
         ajaxUpdateCurrentGame();
-        var gameJson = JSON.parse(localStorage.getItem("GAME_JSON"));
-        if (gameJson !== null){
-
-        }
-        else {
-            throw "Game not updated";
-        }
     }, INTERVAL_LENGTH);
 });
 
@@ -66,11 +59,11 @@ function ajaxGetAndInitCurrentGame() {
         cache: false,
         contentType: 'application/json; charset=utf-8',
         beforeSend: function () {
-           // console.log("before");
+            // console.log("before");
         },
         success: function (game) {
             //console.log(game);
-            initializeGame(JSON.parse(game));
+            initializeGame(game);
         }
     });
 }
@@ -94,7 +87,7 @@ function initializeGame(gameRecord) {
     localStorage.setItem("GAME_JSON", JSON.stringify(gameRecord));
     createBoardsBySize(gameRecord);
     ajaxGetCurrentUserName();
-    updateDataOnScreen(gameRecord, $("#myPlayerName").text);
+    updateDataOnScreen(gameRecord);
 }
 
 function createBoardsBySize(gameRecord) {
@@ -114,7 +107,7 @@ function createBattleshipBoard(gameRecord) {
         table += "<tr>";
         for (j = 0; j < boardSize; j++) {
             idField = i + " " + j;
-            currentChar = getCurrentCharFromBoard("primaryGrid" ,gameRecord, i, j);
+            currentChar = getCurrentCharFromBoard("primaryGrid", gameRecord, i, j);
             classField = setClassFieldByCurrentCharacter(currentChar);
             table += "<th style='padding:0'" + ">" + "<button " + "id=\u0022" + idField + "\u0022 class=\u0022" + classField +
                 "\u0022 style=" + paddingField + " disabled" + "></button>" + "</th>";
@@ -137,7 +130,7 @@ function createTrackingBoard(gameRecord) {
         table += "<tr>";
         for (j = 0; j < boardSize; j++) {
             idField = i + " " + j;
-            currentChar = getCurrentCharFromBoard("trackingGrid" ,gameRecord, i, j);
+            currentChar = getCurrentCharFromBoard("trackingGrid", gameRecord, i, j);
             classField = setClassFieldByCurrentCharacter(currentChar);
             table += "<th style='padding:0'" + ">" + "<button " + "id=\u0022" + idField + "\u0022 class=\u0022" + classField +
                 "\u0022 style=" + paddingField + "></button>" + "</th>";
@@ -149,9 +142,9 @@ function createTrackingBoard(gameRecord) {
     document.getElementById("traceBoard").innerHTML = table;
 }
 
-function getCurrentCharFromBoard(boardType, gameRecord, i, j){
-    if (boardType === "trackingGrid"){
-        if (gameRecord.game.player1.playerType === document.getElementById("myPlayerType").innerHTML){ // If user is player1
+function getCurrentCharFromBoard(boardType, gameRecord, i, j) {
+    if (boardType === "trackingGrid") {
+        if (gameRecord.game.player1.playerType === document.getElementById("myPlayerType").innerHTML) { // If user is player1
             return gameRecord.game.player1.trackingGrid.board[i][j];
         }
         else { // If user is player2
@@ -159,7 +152,7 @@ function getCurrentCharFromBoard(boardType, gameRecord, i, j){
         }
     }
     else { // If primaryGrid
-        if (gameRecord.game.player1.playerType === document.getElementById("myPlayerType").innerHTML){ // If user is player1
+        if (gameRecord.game.player1.playerType === document.getElementById("myPlayerType").innerHTML) { // If user is player1
             return gameRecord.game.player1.primaryGrid.board[i][j];
         }
         else { // If user is player2
@@ -169,7 +162,7 @@ function getCurrentCharFromBoard(boardType, gameRecord, i, j){
 }
 
 function setClassFieldByCurrentCharacter(currentChar) {
-    switch (currentChar){
+    switch (currentChar) {
         case SHIP_SYMBOL:
             return "shipImg";
         case EMPTY_SYMBOL:
@@ -183,8 +176,8 @@ function setClassFieldByCurrentCharacter(currentChar) {
     }
 }
 
-function updateDataOnScreen(gameRecord, username) {
-    updateStatistics(gameRecord, username);
+function updateDataOnScreen(gameRecord) {
+    updateStatistics(gameRecord);
     updateGeneralDataLine(gameRecord);
     updateOpponentName(gameRecord.participants);
     updateWatchersTable(gameRecord.watchers);
@@ -192,7 +185,7 @@ function updateDataOnScreen(gameRecord, username) {
     updateShipsData(gameRecord.game);
 }
 
-function updateStatistics(gameRecord, username) {
+function updateStatistics(gameRecord) {
     var currentGame = gameRecord.game;
     $("#currentPlayer").text(("PLAYER_ONE" === currentGame.currentPlayer.playerType ?
         gameRecord.creator.username : (gameRecord.participants[0]["username"] === gameRecord.creator.username ?
@@ -250,14 +243,14 @@ function updateCommentsLine(numOfParticipants) {
 
 function updateShipsData(currentGame) {
     var shipsText = "Player1's Battleships Left Details: ";
-    for (var i=0; i<currentGame.player1.ships.length; i++){
+    for (var i = 0; i < currentGame.player1.ships.length; i++) {
         shipsText += currentGame.player1.ships[i].shipType.category + ", length: " + currentGame.player1.ships[i].shipType.length +
             ", score: " + currentGame.player1.ships[i].shipType.score + " ||| ";
     }
     $(".myBattleships").text(shipsText);
 
     shipsText = "Player2's Battleships Left Details: ";
-    for (i=0; i<currentGame.player2.ships.length; i++){
+    for (i = 0; i < currentGame.player2.ships.length; i++) {
         shipsText += currentGame.player2.ships[i].shipType.category + ", length: " + currentGame.player2.ships[i].shipType.length +
             ", score: " + currentGame.player2.ships[i].shipType.score + " ||| ";
     }
