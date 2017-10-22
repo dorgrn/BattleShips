@@ -7,7 +7,8 @@
 }
 
 .watchers {
-    background-color: #f7ecb5;
+    /*background-color: #f7ecb5;*/
+    background-image: url("watchersBackground.jpg");
     width: 10%;
     float: left;
     border: 1px solid #204d74;
@@ -16,7 +17,8 @@
 }
 
 .main {
-    background-color: #5bc0de;
+    /*background-color: #5bc0de;*/
+    background-image: url("seaBackground.jpg");
     width: 90%;
     float: left;
     border: 1px solid #204d74;
@@ -122,6 +124,41 @@ button{
 #exitButton:hover{
     background-color: #4165af; /* Green */
     color: white;
+}
+
+.shipImg{
+    background-image: url("ship0.png");
+    background-size: cover;
+    width: 100%;
+    height: 100%;
+}
+
+.emptyImg{
+    background-image: url("empty0.png");
+    background-size: cover;
+    width: 100%;
+    height: 100%;
+}
+
+.hitImg{
+    background-image: url("hit0.png");
+    background-size: cover;
+    width: 100%;
+    height: 100%;
+}
+
+.missImg{
+    background-image: url("miss0.png");
+    background-size: cover;
+    width: 100%;
+    height: 100%;
+}
+
+.mineImg{
+    background-image: url("mine0.png");
+    background-size: cover;
+    width: 100%;
+    height: 100%;
 }
 
 body, html {
