@@ -1,6 +1,7 @@
 package com.BattleShipsWebApp.game.servlet;
 
-import com.BattleShipsWebApp.constants.Constants;
+import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameRecordsManager;
+import com.BattleShipsWebApp.utils.ServletUtils;
 import com.BattleShipsWebApp.utils.SessionUtils;
 import com.google.gson.Gson;
 
@@ -18,12 +19,14 @@ public class GetCurrentGameRecordServlet extends HttpServlet {
             throws ServletException, IOException {
         try (PrintWriter out = response.getWriter()) {
             response.setContentType("application/json");
-            final String gameJson = SessionUtils.getSessionGame(request);
-            String json = new Gson().toJson(gameJson);
-            out.println(json);
+            final String gameName = SessionUtils.getSessionGameName(request);
+            GameRecordsManager gameRecordsManager = ServletUtils.getGameRecordsManager(getServletContext());
+
+            final String gameJson = new Gson().toJson(gameRecordsManager.getGameByName(gameName));
+
+            out.println(gameJson);
             out.flush();
 
-            response.setHeader(Constants.SESSION_SAVED_GAME, gameJson);
         }
 
 

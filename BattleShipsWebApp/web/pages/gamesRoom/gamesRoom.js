@@ -30,6 +30,7 @@ function ajaxJoinOrWatch(userRole, playerType, game) {
             type: 'GET',
             url: ADD_USER_URI,
             dataType: 'html',
+            cache: false,
             data: { // should match Constants
                 "USERNAME": $("#usernameNav").text(),
                 "PLAYER_TYPE": playerType,
@@ -38,7 +39,7 @@ function ajaxJoinOrWatch(userRole, playerType, game) {
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 if (jqXHR.status !== null && jqXHR.status === 400){
-                    if (jqXHR.getResponseHeader(ERROR_ATTRIBUTE)) {
+                    if (jqXHR.getResponseHeader(ERROR_ATTRIBUTE) !== null) {
                         alert(jqXHR.getResponseHeader(ERROR_ATTRIBUTE));
                     }
                 }

@@ -3,7 +3,6 @@ package com.BattleShipsWebApp.mainGamesRoom.servlets.readResource;
 import BattleShipsEngine.engine.ConfigException;
 import BattleShipsEngine.engine.Game;
 import BattleShipsEngine.engine.GameConfig;
-import BattleShipsEngine.engine.Player;
 import com.BattleShipsWebApp.constants.Constants;
 import com.BattleShipsWebApp.exceptions.RecordAlreadyExistsException;
 import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameRecord;
@@ -12,8 +11,6 @@ import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameStatus;
 import com.BattleShipsWebApp.utils.InputFileUtils;
 import com.BattleShipsWebApp.utils.ServletUtils;
 import com.BattleShipsWebApp.utils.SessionUtils;
-import com.google.gson.Gson;
-import sun.security.krb5.Config;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -34,6 +31,7 @@ import java.util.Scanner;
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 5 * 5)
 public class ReadXMLServlet extends HttpServlet {
     private int tempSaveCounter = 0;
+
     /**
      * Handles the HTTP <code>POST</code> method.
      *
@@ -60,24 +58,13 @@ public class ReadXMLServlet extends HttpServlet {
             gameConfig.load(outputTempFile);
             Game game = gameConfig.initiateGameFromGenerated();
 
+            proccessGameRecord(gameName, creatorName, game);
 
-            GameRecordsManager gameRecordsManager = ServletUtils.getGameRecordsManager(getServletContext());
-            // is creator
-            GameRecord gameRecord = createGameRecord(gameName, creatorName, Player.Type.PLAYER_ONE, game);
-            //gameRecord.addParticipant(gameRecord.getCreator());
-            gameRecordsManager.addGameRecord(gameRecord);
-
-            // add game record to session
-            String gson = new Gson().toJson(gameRecord);
-            //System.out.println(gson);
-
-            request.getSession().setAttribute(Constants.SESSION_SAVED_GAME, gson);
-            request.getSession().setAttribute(Constants.PLAYER_TYPE_ATTRIBUTE, Player.Type.PLAYER_ONE);
-            //DEBUG: System.out.println("Config inserted successfully");
+            request.getSession().setAttribute(Constants.GAME_NAME_ATTRIBUTE_NAME, gameName);
+            System.out.println("Config inserted successfully");
 
             response.sendRedirect(Constants.GAME_URI);
             //DEBUG: System.out.println("The game " + gameName + " was saved on session " + request.getSession().toString());
-
         } catch (RecordAlreadyExistsException | ConfigException e) {
             System.err.println(e.getMessage());
             response.setHeader(e.getClass().getSimpleName(), gameName);
@@ -87,7 +74,14 @@ public class ReadXMLServlet extends HttpServlet {
         }
     }
 
-    private GameRecord createGameRecord(String gameName, String creatorName, Player.Type playerType, Game game) throws RecordAlreadyExistsException {
+    private void proccessGameRecord(String gameName, String creatorName, Game game) throws RecordAlreadyExistsException {
+        GameRecordsManager gameRecordsManager = ServletUtils.getGameRecordsManager(getServletContext());
+        // is creator
+        GameRecord gameRecord = createGameRecord(gameName, creatorName, game);
+        gameRecordsManager.addGameRecord(gameRecord);
+    }
+
+    private GameRecord createGameRecord(String gameName, String creatorName, Game game) throws RecordAlreadyExistsException {
         GameRecord gameRecord = new GameRecord(gameName, creatorName, game);
         gameRecord.setGameStatus(GameStatus.ONE_PLAYER);
 
@@ -144,7 +138,6 @@ public class ReadXMLServlet extends HttpServlet {
         }
         return result.toString();
     }
-
 
 
     private static String getSubmittedFileName(Part part) {

@@ -42,7 +42,7 @@ public class LoginServlet extends HttpServlet {
             } else { // signup
                 //normalize the username value
                 usernameFromParameter = usernameFromParameter.trim();
-                if (userManager.isUserExists(new User(usernameFromParameter, null))) {
+                if (userManager.isUserExists(new User(usernameFromParameter))) {
                     usernameExists(request, response, usernameFromParameter);
                 } else {
                     signupUser(request, response, usernameFromParameter, userManager);
@@ -51,7 +51,7 @@ public class LoginServlet extends HttpServlet {
         } else {
             // user already signedup
             if (usernameFromParameter.equals(usernameFromSession)) {
-                request.setAttribute(Constants.USERNAME_ALERT, "Username already exists. Redirecting to page.");
+                System.out.println("Username already exists. Redirecting to page.");
             } else { // resign user using different name
                 resignUser(request, usernameFromSession, usernameFromParameter, userManager);
             }
@@ -61,23 +61,24 @@ public class LoginServlet extends HttpServlet {
     }
 
     private void usernameExists(HttpServletRequest request, HttpServletResponse response, String usernameFromParameter) throws IOException {
-        String alertMessage = "Username " + usernameFromParameter + " already exists. Redirecting to page.";
-        request.setAttribute(Constants.USERNAME_ALERT, alertMessage);
+        request.getSession(true).setAttribute(Constants.USERNAME, usernameFromParameter);
+        System.out.println("On login, User already exists.");
         response.sendRedirect(GAMES_ROOM_URL);
     }
 
     private void resignUser(HttpServletRequest request, String usernameFromSession, String usernameFromParameter, UserManager userManager) {
         request.getSession(true).setAttribute(Constants.USERNAME, usernameFromParameter);
         userManager.removeUser(usernameFromSession);
-        request.setAttribute(Constants.USERNAME_ALERT, "username already signedup, resigning");
+        userManager.addUser(usernameFromParameter);
+        System.out.println("username already signedup, resigning.");
     }
 
     private void signupUser(HttpServletRequest request, HttpServletResponse response, String usernameFromParameter, UserManager userManager) throws IOException {
         //add the new user to the users list
-        userManager.addUser(usernameFromParameter, null);
+        userManager.addUser(usernameFromParameter);
         request.getSession(true).setAttribute(Constants.USERNAME, usernameFromParameter);
         //redirect the request to the chat room - in order to actually change the URL
-        System.out.println("On login, request URI is: " + request.getRequestURI());
+        System.out.println("On login, new user joining.");
         response.sendRedirect(GAMES_ROOM_URL);
     }
 

@@ -1,13 +1,13 @@
 package com.BattleShipsWebApp.mainGamesRoom.servlets.gamesManagement;
 
 import com.BattleShipsWebApp.constants.Constants;
+import com.BattleShipsWebApp.exceptions.GameRecordSizeException;
 import com.BattleShipsWebApp.exceptions.RecordAlreadyExistsException;
 import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameRecord;
 import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameRecordsManager;
 import com.BattleShipsWebApp.registration.users.User;
 import com.BattleShipsWebApp.registration.users.UserManager;
 import com.BattleShipsWebApp.utils.ServletUtils;
-import com.google.gson.Gson;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -36,7 +36,6 @@ public class AddUserServlet extends HttpServlet {
         GameRecord gameRecord = gameRecordsManager.getGameByName(gameName);
 
         try {
-
             if (userRole.equals(Constants.USER_PARTICIPANT)) {
                 gameRecordsManager.addParticipantToGame(user, gameRecord);
             } else if (userRole.equals(Constants.USER_WATCHER)) {
@@ -49,18 +48,21 @@ public class AddUserServlet extends HttpServlet {
             request.getSession(true).setAttribute(Constants.GAME_NAME_ATTRIBUTE_NAME, gameName);
             request.getSession(true).setAttribute(Constants.PLAYER_TYPE_ATTRIBUTE, playerType);
             request.getSession(true).setAttribute(Constants.USER_ROLE_ATTRIBUTE, userRole);
-            request.getSession(true).setAttribute(Constants.SESSION_SAVED_GAME, new Gson().toJson(gameRecord));
 
             /*
             //TODO DEBUG
             System.out.println("The game " + gameName + " was saved on user " + user.getUserName() + "'s session! " +
                     "He's a " + userRole);*/
 
-        } catch (RecordAlreadyExistsException e) {
-            System.err.println(e.getMessage());
-            response.setStatus(400);
-            response.setHeader(Constants.ERROR_ATTRIBUTE_NAME, "You are already signed up for this game!");
+        } catch (RecordAlreadyExistsException | GameRecordSizeException e) {
+            handleException(response, e);
         }
+    }
+
+    private void handleException(HttpServletResponse response, Exception e) {
+        System.err.println(e.getMessage());
+        response.setStatus(400);
+        response.setHeader(Constants.ERROR_ATTRIBUTE_NAME, "You are already signed up for this game!");
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

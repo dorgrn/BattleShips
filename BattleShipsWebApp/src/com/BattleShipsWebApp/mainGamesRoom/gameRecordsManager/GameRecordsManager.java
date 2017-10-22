@@ -1,8 +1,7 @@
 package com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager;
 
 import BattleShipsEngine.engine.Game;
-import BattleShipsEngine.engine.GameConfig;
-import BattleShipsEngine.engine.Player;
+import com.BattleShipsWebApp.exceptions.GameRecordSizeException;
 import com.BattleShipsWebApp.exceptions.RecordAlreadyExistsException;
 import com.BattleShipsWebApp.registration.users.User;
 
@@ -18,7 +17,7 @@ public class GameRecordsManager {
             throws RecordAlreadyExistsException {
         GameRecord record = new GameRecord(gameName, creatorName, game);
 
-        if (gameRecords.contains(record)){
+        if (gameRecords.contains(record)) {
             throw new RecordAlreadyExistsException("in game records");
         }
 
@@ -27,14 +26,14 @@ public class GameRecordsManager {
 
     public void addGameRecord(GameRecord record)
             throws RecordAlreadyExistsException {
-        if (gameRecords.contains(record)){
+        if (gameRecords.contains(record)) {
             throw new RecordAlreadyExistsException("in game records");
         }
 
         gameRecords.add(record);
     }
 
-    public GameRecord getGameByName(String gameName){
+    public GameRecord getGameByName(String gameName) {
         Optional<GameRecord> result = gameRecords.stream()
                 .filter(gameRecord -> gameRecord.getGameName().equals(gameName))
                 .findFirst();
@@ -42,21 +41,23 @@ public class GameRecordsManager {
         return result.orElse(null);
     }
 
-    public void removeGameRecord(final String gameName) {
+    public void removeGameRecord(final String gameName) throws GameRecordSizeException {
         GameRecord gameRecord = getGameByName(gameName);
-        if (gameRecord != null){
+        if (gameRecord != null) {
             gameRecords.remove(gameRecord);
         }
     }
+
     public Set<GameRecord> getGameRecords() {
         return Collections.unmodifiableSet(gameRecords);
     }
 
-    public void addParticipantToGame(final User user, final GameRecord gameRecord) throws RecordAlreadyExistsException {
+    public void addParticipantToGame(final User user, final GameRecord gameRecord) throws RecordAlreadyExistsException, GameRecordSizeException {
         gameRecord.addParticipant(user);
     }
 
-    public void addWatcherToGame(final User user, final GameRecord gameRecord) throws RecordAlreadyExistsException {
+
+    public void addWatcherToGame(final User user, final GameRecord gameRecord) throws RecordAlreadyExistsException, GameRecordSizeException {
         gameRecord.addWatcher(user);
     }
 }
