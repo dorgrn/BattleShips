@@ -64,6 +64,7 @@ public class ReadXMLServlet extends HttpServlet {
             GameRecordsManager gameRecordsManager = ServletUtils.getGameRecordsManager(getServletContext());
             // is creator
             GameRecord gameRecord = createGameRecord(gameName, creatorName, Player.Type.PLAYER_ONE, game);
+            //gameRecord.addParticipant(gameRecord.getCreator());
             gameRecordsManager.addGameRecord(gameRecord);
 
             // add game record to session
