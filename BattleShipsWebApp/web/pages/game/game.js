@@ -1,5 +1,11 @@
 const INTERVAL_LENGTH = 5000;
 
+const HIT_SYMBOL = 'H';
+const MISS_SYMBOL = 'L';
+const EMPTY_SYMBOL = '-';
+const SHIP_SYMBOL = 'S';
+const MINE_SYMBOL = 'M';
+
 var intervalRefreshLists = null;
 
 $(window).on('load', function () {
@@ -70,13 +76,43 @@ function ajaxGetAndInitCurrentGame() {
 
 function initializeGame(gameRecord) {
     localStorage.setItem("GAME_JSON", JSON.stringify(gameRecord));
-    createBoardsBySize(gameRecord.boardSize);
+    createBoardsBySize(gameRecord);
     ajaxGetCurrentUserName();
     updateDataOnScreen(gameRecord, $("#myPlayerName").text);
 }
 
-function createBoardsBySize(boardSize) {
-    var i, j;
+function createBoardsBySize(gameRecord) {
+    createBattleshipBoard(gameRecord);
+    createTrackingBoard(gameRecord);
+}
+
+function createBattleshipBoard(gameRecord) {
+    var boardSize = gameRecord.boardSize;
+    var i, j, currentChar, idField, classField;
+    var multiplyConst = 0.02 * (20 - boardSize) + 1;
+    var buttonSize = 150 * multiplyConst / boardSize;
+    var paddingField = 'padding:' + buttonSize + 'px ';
+    var table = "";
+
+    for (i = 0; i < boardSize; i++) {
+        table += "<tr>";
+        for (j = 0; j < boardSize; j++) {
+            idField = i + " " + j;
+            currentChar = getCurrentCharFromBoard("primaryGrid" ,gameRecord, i, j);
+            classField = setClassFieldByCurrentCharacter(currentChar);
+            table += "<th style='padding:0'" + ">" + "<button " + "id=\u0022" + idField + "\u0022 class=\u0022" + classField +
+                "\u0022 style=" + paddingField + " disabled" + "></button>" + "</th>";
+            if (j === boardSize - 1) {
+                table += "</tr>";
+            }
+        }
+    }
+    document.getElementById("battleshipBoard").innerHTML = table;
+}
+
+function createTrackingBoard(gameRecord) {
+    var boardSize = gameRecord.boardSize;
+    var i, j, currentChar, idField, classField;
     var multiplyConst = 0.02 * (20 - boardSize) + 1;
     var buttonSize = 150 * multiplyConst / boardSize;
     var paddingField = 'padding:' + buttonSize + 'px ';
@@ -84,28 +120,77 @@ function createBoardsBySize(boardSize) {
     for (i = 0; i < boardSize; i++) {
         table += "<tr>";
         for (j = 0; j < boardSize; j++) {
-            table += "<th style='padding:0'" + ">" + "<button " + "style=" + paddingField + "></button>" + "</th>";
+            idField = i + " " + j;
+            currentChar = getCurrentCharFromBoard("trackingGrid" ,gameRecord, i, j);
+            classField = setClassFieldByCurrentCharacter(currentChar);
+            table += "<th style='padding:0'" + ">" + "<button " + "id=\u0022" + idField + "\u0022 class=\u0022" + classField +
+                "\u0022 style=" + paddingField + "></button>" + "</th>";
             if (j === boardSize - 1) {
                 table += "</tr>";
             }
         }
     }
-    document.getElementById("battleshipBoard").innerHTML = table;
     document.getElementById("traceBoard").innerHTML = table;
 }
 
-//TODO: break this function into smaller ones
-function updateDataOnScreen(gameRecord, username) {
-    var currentGame = gameRecord.game;
-    //console.log(currentGame);
+function getCurrentCharFromBoard(boardType, gameRecord, i, j){
+    if (boardType === "trackingGrid"){
+        if (gameRecord.game.player1.playerType === document.getElementById("myPlayerType").innerHTML){ // If user is player1
+            return gameRecord.game.player1.trackingGrid.board[i][j];
+        }
+        else { // If user is player2
+            return gameRecord.game.player2.trackingGrid.board[i][j];
+        }
+    }
+    else { // If primaryGrid
+        if (gameRecord.game.player1.playerType === document.getElementById("myPlayerType").innerHTML){ // If user is player1
+            return gameRecord.game.player1.primaryGrid.board[i][j];
+        }
+        else { // If user is player2
+            return gameRecord.game.player2.primaryGrid.board[i][j];
+        }
+    }
+}
 
-    // use of GameRecordsServlet json:
+function setClassFieldByCurrentCharacter(currentChar) {
+    switch (currentChar){
+        case SHIP_SYMBOL:
+            return "shipImg";
+        case EMPTY_SYMBOL:
+            return "emptyImg";
+        case HIT_SYMBOL:
+            return "hitImg";
+        case MISS_SYMBOL:
+            return "missImg";
+        case MINE_SYMBOL:
+            return "mineImg";
+    }
+}
+
+function updateDataOnScreen(gameRecord, username) {
+    updateStatistics(gameRecord, username);
+    updateGeneralDataLine(gameRecord);
+    updateOpponentName(gameRecord.participants);
+    updateWatchersTable(gameRecord.watchers);
+    updateCommentsLine(gameRecord.participants.length);
+    updateShipsData(gameRecord.game);
+}
+
+function updateStatistics(gameRecord, username) {
+    var currentGame = gameRecord.game;
+    $("#currentPlayer").text(("PLAYER_ONE" === currentGame.currentPlayer.playerType ?
+        gameRecord.creator.username : (gameRecord.participants[0]["username"] === gameRecord.creator.username ?
+            gameRecord.participants[0]["username"] : gameRecord.participants[1]["username"])) + "'s Turn");
     $("#playerScore").text("Player Score: " + currentGame.currentPlayer.score);
     $("#turnsCompleted").text("Turn Number: " + currentGame.currentPlayer.turnNumber);
     $("#totalHits").text("Total Hits: " + currentGame.currentPlayer.hitAmount);
     $("#totalMisses").text("Total Misses: " + currentGame.currentPlayer.missAmount);
     $("#timePerMove").text("Time Per Move: " + currentGame.currentPlayer.totalTurnTime);
     $("#minesLeft").text("Mines Left: " + currentGame.currentPlayer.amountOfMinesToPlace);
+}
+
+function updateGeneralDataLine(gameRecord) {
+    var currentGame = gameRecord.game;
     var tab = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0";
     var currentTime = new Date().getTime();
     $("#generalData").text(gameRecord.participants[0]["username"] + "'s Score: " +
@@ -113,13 +198,8 @@ function updateDataOnScreen(gameRecord, username) {
         (gameRecord.participants.length === 1 ? "" : gameRecord.participants[1]["username"] + "'s Score: " +
             gameRecord.game.player1.score + tab) +
         "Time Passed: " + (currentTime - currentGame.startTime) / 1000 +
-        tab + "Total Turns Completed: " + gameRecord.turnsAmount);
-    updateOpponentName(gameRecord.participants);
-    updateWatchersTable(gameRecord.watchers);
-    updateCommentsLine(gameRecord.participants.length);
-    updateShipsData(gameRecord);
+        tab + "Total Turns Completed: " + (gameRecord.turnsAmount === undefined ? 0 : gameRecord.turnsAmount));
 }
-
 
 function updateOpponentName(participants) {
     if (participants.length === 1) {
@@ -152,8 +232,20 @@ function updateCommentsLine(numOfParticipants) {
     }
 }
 
-function updateShipsData(game) {
-    //// todo: implement...
+function updateShipsData(currentGame) {
+    var shipsText = "Player1's Battleships Left Details: ";
+    for (var i=0; i<currentGame.player1.ships.length; i++){
+        shipsText += currentGame.player1.ships[i].shipType.category + ", length: " + currentGame.player1.ships[i].shipType.length +
+            ", score: " + currentGame.player1.ships[i].shipType.score + " ||| ";
+    }
+    $(".myBattleships").text(shipsText);
+
+    shipsText = "Player2's Battleships Left Details: ";
+    for (i=0; i<currentGame.player2.ships.length; i++){
+        shipsText += currentGame.player2.ships[i].shipType.category + ", length: " + currentGame.player2.ships[i].shipType.length +
+            ", score: " + currentGame.player2.ships[i].shipType.score + " ||| ";
+    }
+    $(".opponentBattleships").text(shipsText);
 }
 
 function backToGamesRoom() {
