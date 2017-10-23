@@ -169,9 +169,12 @@ button{
 .chat div{
     border: 2px solid dodgerblue;
     border-radius: 12px;
+    height: auto;
+    overflow-y: auto;
 }
 
 #messages {
+
 }
 
 body, html {

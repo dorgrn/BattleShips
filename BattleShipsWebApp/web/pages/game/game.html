@@ -59,15 +59,14 @@
 
     <div class="chat">
         <div id="messages"></div>
-        <div id="sendMessage">
-
-            <input type="text" id="sendContent"/>
-            <button type="button" onclick="onSendMessage($('#sendContent').val());">Send</button>
-        </div>
-
     </div>
+
 </div>
 
+<div class="chat" id="sendMessage" style="margin-left: 5px">
+    <input type="text" id="sendContent"/>
+    <button type="button" onclick="onSendMessage($('#sendContent').val())">Send</button>
+</div>
 <p hidden id="myPlayerType"></p> <!-- hidden playerType -->
 </body>
 </html>

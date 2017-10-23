@@ -49,5 +49,5 @@ function appendMessage(message) {
 
 
 function scrollToBottom(messageDiv) {
-    messageDiv.scrollTop = messageDiv.scrollHeight / 10;
+    messageDiv.scrollTop = messageDiv.scrollHeight;
 }

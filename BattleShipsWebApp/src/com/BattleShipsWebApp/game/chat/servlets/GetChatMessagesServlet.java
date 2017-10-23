@@ -32,7 +32,7 @@ public class GetChatMessagesServlet extends HttpServlet {
         }
 
         int chatVersion = ServletUtils.getIntParameter(request, Constants.CHAT_VERSION_PARAMETER);
-        logServerMessage("Server Chat version: " + chatManager.getVersion() + ", User '" + username + "' Chat version: " + chatVersion);
+        //logServerMessage("Server Chat version: " + chatManager.getVersion() + ", User '" + username + "' Chat version: " + chatVersion);
 
 
         try (PrintWriter out = response.getWriter()) {
@@ -40,7 +40,7 @@ public class GetChatMessagesServlet extends HttpServlet {
             ChatAndVersion cav = new ChatAndVersion(chatEntries, chatManager.getVersion());
             Gson gson = new Gson();
             String jsonResponse = gson.toJson(cav);
-            logServerMessage(jsonResponse);
+            //logServerMessage(jsonResponse);
             out.print(jsonResponse);
             out.flush();
 

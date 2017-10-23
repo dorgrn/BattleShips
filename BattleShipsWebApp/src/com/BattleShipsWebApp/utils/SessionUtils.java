@@ -9,14 +9,14 @@ public class SessionUtils {
     public static String getSessionUsername(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         Object sessionAttribute = session != null ? session.getAttribute(Constants.USERNAME) : null;
-        System.out.println(sessionAttribute);
+        //System.out.println(sessionAttribute);
         return sessionAttribute != null ? sessionAttribute.toString() : null;
     }
 
     public static String getSessionUserType(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         Object sessionAttribute = session != null ? session.getAttribute(Constants.PLAYER_TYPE_ATTRIBUTE) : null;
-        System.out.println(sessionAttribute);
+        //System.out.println(sessionAttribute);
         return sessionAttribute != null ? sessionAttribute.toString() : null;
     }
 
@@ -26,7 +26,7 @@ public class SessionUtils {
 
         Object sessionAttribute = session != null ? session.getAttribute(Constants.GAME_NAME_ATTRIBUTE_NAME) : null;
         //DEBUG
-        System.out.println("Session id is: " + session.getId());
+        //System.out.println("Session id is: " + session.getId());
         //System.out.println(gameName);
         return sessionAttribute != null ? sessionAttribute.toString() : null;
     }
