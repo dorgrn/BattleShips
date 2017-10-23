@@ -1,6 +1,8 @@
 package com.BattleShipsWebApp.utils;
 
 import java.io.*;
+import java.net.URL;
+import java.util.Scanner;
 
 public class InputFileUtils {
     private final static String USER_PATH = System.getProperty("user.home");
@@ -60,5 +62,45 @@ public class InputFileUtils {
             }
 
         }
+    }
+
+    private static String readFromInputStream(InputStream inputStream) {
+        return new Scanner(inputStream).useDelimiter("\\Z").next();
+    }
+
+    private String getAbsolutePathOfResource(String resource) {
+        URL url = this.getClass().getResource(resource);
+        return url != null ? url.getPath() : "?";
+    }
+
+
+//    private String getSubmittedFile(HttpServletRequest request) throws IOException, ServletException {
+//        StringBuilder fileContent = new StringBuilder();
+//
+//        Collection<Part> parts = request.getParts();
+//
+//        for ( Part part : parts ) {
+//            //to write the content of the file to an actual file in the system (will be created at c:\samplefile)
+//            part.write("samplefile");
+//
+//            //to write the content of the file to a string
+//            fileContent.append(readFromInputStream(part.getInputStream()));
+//        }
+//
+//        return fileContent.toString();
+//    }
+
+
+    private String getResourceContent(String resource) {
+        StringBuilder result = new StringBuilder();
+        try (InputStream stream = this.getClass().getResourceAsStream(resource)) {
+            Scanner scanner = new Scanner(stream, "UTF-8");
+            while (scanner.hasNextLine()) {
+                result.append(scanner.nextLine()).append("\n\r");
+            }
+        } catch (Exception exception) {
+            return "Error: Failed to read file!";
+        }
+        return result.toString();
     }
 }

@@ -45,7 +45,7 @@ function ajaxJoinOrWatch(userRole, playerType, game) {
                 }
             },
             success: function() {
-                var newGameStatus = getGameStatusAfterJoin(game.gameStatus);
+                var newGameStatus = getGameStatusAfterJoin(game.gameStatus, userRole);
                 ajaxUpdateGameStatus(game, newGameStatus);
                 window.location.replace(GAME_URI);
             }
@@ -92,13 +92,11 @@ function watchGame(game) {
     // check that game can be watched
     switch (game.gameStatus){
         case FULL_GAME:
-            throw "cant join a full game";
+            ajaxJoinOrWatch(USER_WATCHER, null, game);
             break;
         case EMPTY_GAME:
-            ajaxJoinOrWatch(USER_WATCHER, PLAYER_ONE, game);
-            break;
         case ONE_PLAYER:
-            ajaxJoinOrWatch(USER_WATCHER, PLAYER_TWO, game);
+            throw "cant watch a non full game";
             break;
         default:
             throw "unexpected value in watchGame";
@@ -148,7 +146,11 @@ function logout() {
     });
 }
 
-function getGameStatusAfterJoin(gameStatus) {
+function getGameStatusAfterJoin(gameStatus, userRole) {
+    if (userRole === USER_WATCHER){
+        return gameStatus;
+    }
+
     switch (gameStatus){
         case EMPTY_GAME:
             return ONE_PLAYER;
@@ -164,7 +166,11 @@ function getGameStatusAfterJoin(gameStatus) {
     return null;
 }
 
-function getGameStatusAfterExit(gameStatus) {
+function getGameStatusAfterExit(gameStatus, userRole) {
+    if (userRole === USER_WATCHER){
+        return gameStatus;
+    }
+
     switch (gameStatus){
         case EMPTY_GAME:
             throw "Can't remove player from empty game";

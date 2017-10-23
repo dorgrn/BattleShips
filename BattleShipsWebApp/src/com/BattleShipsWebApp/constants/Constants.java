@@ -24,4 +24,6 @@ public class Constants {
     public static final String GAME_ROOM_URI = "/pages/gamesRoom/gamesRoom.html";
     public static final String GAME_URI = "/pages/game/game.html";
 
+    public static final String SESSION_GAME_RECORDS_ATTRIBUTE_NAME = "SESSION_RECORDS_ATTRIBUTE";
+    public static final int INT_PARAMETER_ERROR = -1;
 }

@@ -36,18 +36,16 @@ public class AddUserServlet extends HttpServlet {
         GameRecord gameRecord = gameRecordsManager.getGameByName(gameName);
 
         try {
+
             if (userRole.equals(Constants.USER_PARTICIPANT)) {
                 gameRecordsManager.addParticipantToGame(user, gameRecord);
             } else if (userRole.equals(Constants.USER_WATCHER)) {
                 gameRecordsManager.addWatcherToGame(user, gameRecord);
             }
-            //response.sendRedirect(Constants.GAME_URI);
-            response.addHeader(Constants.REDIRECT_ATTRIBUTE_NAME, Constants.GAME_URI);
 
-            //set these attributes to current session
-            request.getSession(true).setAttribute(Constants.GAME_NAME_ATTRIBUTE_NAME, gameName);
-            request.getSession(true).setAttribute(Constants.PLAYER_TYPE_ATTRIBUTE, playerType);
-            request.getSession(true).setAttribute(Constants.USER_ROLE_ATTRIBUTE, userRole);
+            //response.addHeader(Constants.REDIRECT_ATTRIBUTE_NAME, Constants.GAME_URI);
+            setAttributes(request, gameName, userRole, playerType);
+            response.sendRedirect(Constants.GAME_URI);
 
             /*
             //TODO DEBUG
@@ -55,14 +53,17 @@ public class AddUserServlet extends HttpServlet {
                     "He's a " + userRole);*/
 
         } catch (RecordAlreadyExistsException | GameRecordSizeException e) {
-            handleException(response, e);
+           setAttributes(request, gameName, userRole, playerType);
+
         }
     }
 
-    private void handleException(HttpServletResponse response, Exception e) {
-        System.err.println(e.getMessage());
-        response.setStatus(400);
-        response.setHeader(Constants.ERROR_ATTRIBUTE_NAME, "You are already signed up for this game!");
+    private void setAttributes(HttpServletRequest request, String gameName, String userRole, String playerType) throws IOException {
+        //set these attributes to current session
+        request.getSession(true).setAttribute(Constants.GAME_NAME_ATTRIBUTE_NAME, gameName);
+        // player type and user role are the same as the player
+        //request.getSession(true).setAttribute(Constants.PLAYER_TYPE_ATTRIBUTE, playerType);
+        request.getSession(true).setAttribute(Constants.USER_ROLE_ATTRIBUTE, userRole);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -70,9 +71,9 @@ public class AddUserServlet extends HttpServlet {
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
+     * @param request  servlets request
+     * @param response servlets response
+     * @throws ServletException if a servlets-specific error occurs
      * @throws IOException      if an I/O error occurs
      */
     @Override
@@ -86,9 +87,9 @@ public class AddUserServlet extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
+     * @param request  servlets request
+     * @param response servlets response
+     * @throws ServletException if a servlets-specific error occurs
      * @throws IOException      if an I/O error occurs
      */
     @Override
@@ -98,9 +99,9 @@ public class AddUserServlet extends HttpServlet {
     }
 
     /**
-     * Returns a short description of the servlet.
+     * Returns a short description of the servlets.
      *
-     * @return a String containing servlet description
+     * @return a String containing servlets description
      */
     @Override
     public String getServletInfo() {

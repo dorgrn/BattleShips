@@ -31,7 +31,6 @@ function ajaxGetCurrentUserName() {
         success: function (users) {
             $.each(users || [], function (index, username) {
                 $("#myPlayerName").text(username);
-                sessionStorage.setItem("PLAYER_NAME", username);
             });
         }
     });
@@ -45,7 +44,6 @@ function ajaxGetCurrentUserType() {
         success: function (users) {
             $.each(users || [], function (index, userType) {
                 $("#myPlayerType").text(userType);
-                sessionStorage.setItem("PLAYER_TYPE", userType);
             });
         }
     });
@@ -84,7 +82,6 @@ function ajaxUpdateCurrentGame() {
 }
 
 function initializeGame(gameRecord) {
-    localStorage.setItem("GAME_JSON", JSON.stringify(gameRecord));
     createBoardsBySize(gameRecord);
     ajaxGetCurrentUserName();
     updateDataOnScreen(gameRecord);
@@ -227,7 +224,7 @@ function updateOpponentName(participants) {
 function updateWatchersTable(watchers) {
     var table = "";
     for (var i = 0; i < watchers.length; i++) {
-        table += "<tr><th>" + watchers[i]["username"] + "</th></tr>";
+        table += "<tr><td> " + watchers[i]["username"] + " </td></tr>";
     }
     $("#watchersTable").text(table);
 }

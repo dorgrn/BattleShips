@@ -1,37 +1,39 @@
-package com.BattleShipsWebApp.mainGamesRoom.servlets.users;
+package com.BattleShipsWebApp.mainGamesRoom.servlets.readResource;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Set;
-import java.util.stream.Collectors;
+import com.BattleShipsWebApp.constants.Constants;
+import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameRecord;
+import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameRecordsManager;
+import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameStatus;
+import com.BattleShipsWebApp.utils.ServletUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
-import com.BattleShipsWebApp.registration.users.User;
-import com.BattleShipsWebApp.registration.users.UserManager;
-import com.BattleShipsWebApp.utils.ServletUtils;
-import com.google.gson.Gson;
 
-@WebServlet(name = "GetUsersServlet", urlPatterns = {"/gamesRoom/users"})
-public class GetUsersServlet extends HttpServlet {
+@WebServlet(name = "ErrorInFileInputServlet", urlPatterns = {"/gamesRoom/errorInFileInput"})
+public class ErrorInFileInputServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        response.setContentType("application/json");
+        // needed params
+        final String gameNameParameter = request.getParameter(Constants.GAME_NAME_ATTRIBUTE_NAME);
+        final GameStatus gameStatusParameter =
+                GameStatus.valueOf(request.getParameter(Constants.GAME_STATUS_ATTRIBUTE_NAME));
 
-        try (PrintWriter out = response.getWriter()){
-            Gson gson = new Gson();
-            UserManager userManager = ServletUtils.getUserManager(getServletContext());
-            Set<String> usersList = userManager.getUsers().stream().map(User::getUserName).collect(Collectors.toSet());
-            String json = gson.toJson(usersList);
-            out.println(json);
-            out.flush();
+        final GameRecordsManager gameRecordsManager = ServletUtils.getGameRecordsManager(getServletContext());
+
+        GameRecord gameRecord = gameRecordsManager.getGameByName(gameNameParameter);
+
+        if (gameRecord != null) {
+            gameRecord.setGameStatus(gameStatusParameter);
+        } else {
+            throw new ServletException("Game not found!");
         }
-        //response.setHeader("username", SessionUtils.getUsername(request));
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -74,5 +76,5 @@ public class GetUsersServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-
 }
+

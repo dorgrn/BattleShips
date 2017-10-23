@@ -41,9 +41,9 @@ public class UpdateGameStatusServlet extends HttpServlet {
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
+     * @param request  servlets request
+     * @param response servlets response
+     * @throws ServletException if a servlets-specific error occurs
      * @throws IOException      if an I/O error occurs
      */
     @Override
@@ -55,9 +55,9 @@ public class UpdateGameStatusServlet extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
+     * @param request  servlets request
+     * @param response servlets response
+     * @throws ServletException if a servlets-specific error occurs
      * @throws IOException      if an I/O error occurs
      */
     @Override
@@ -67,9 +67,9 @@ public class UpdateGameStatusServlet extends HttpServlet {
     }
 
     /**
-     * Returns a short description of the servlet.
+     * Returns a short description of the servlets.
      *
-     * @return a String containing servlet description
+     * @return a String containing servlets description
      */
     @Override
     public String getServletInfo() {

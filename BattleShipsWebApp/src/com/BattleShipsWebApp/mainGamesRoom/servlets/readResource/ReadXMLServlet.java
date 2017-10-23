@@ -12,6 +12,7 @@ import com.BattleShipsWebApp.utils.InputFileUtils;
 import com.BattleShipsWebApp.utils.ServletUtils;
 import com.BattleShipsWebApp.utils.SessionUtils;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -23,21 +24,22 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.util.Collection;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 @WebServlet(name = "ReadXMLServlet", urlPatterns = {"/readResource/readxml"})
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 5 * 5)
 public class ReadXMLServlet extends HttpServlet {
+    private static final String DIRECTORY_NAME = "temp";
+    private static final String FILE_NAME_START = "TEMP_";
     private int tempSaveCounter = 0;
 
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
+     * @param request  servlets request
+     * @param response servlets response
+     * @throws ServletException if a servlets-specific error occurs
      * @throws IOException      if an I/O error occurs
      */
     @Override
@@ -50,94 +52,64 @@ public class ReadXMLServlet extends HttpServlet {
         final Part filePart = request.getPart("file"); // Retrieves <input type="file" name="file">
         final String fileName = getSubmittedFileName(filePart);
 
-        InputStream fileContent = filePart.getInputStream();
-        File outputTempFile = InputFileUtils.inputStreamToFile(fileContent, "temp", "TEMP_" + tempSaveCounter++, "xml");
-
-        GameConfig gameConfig = new GameConfig();
         try {
+            InputStream fileContent = filePart.getInputStream();
+            File outputTempFile = InputFileUtils.inputStreamToFile(fileContent, DIRECTORY_NAME, FILE_NAME_START + tempSaveCounter++, "xml");
+
+            GameConfig gameConfig = new GameConfig();
             gameConfig.load(outputTempFile);
             Game game = gameConfig.initiateGameFromGenerated();
 
-            proccessGameRecord(gameName, creatorName, game);
+            processGameRecord(gameName, creatorName, game);
 
             request.getSession().setAttribute(Constants.GAME_NAME_ATTRIBUTE_NAME, gameName);
-            System.out.println("Config inserted successfully");
+            System.out.println("GameRecord inserted successfully");
 
             response.sendRedirect(Constants.GAME_URI);
             //DEBUG: System.out.println("The game " + gameName + " was saved on session " + request.getSession().toString());
-        } catch (RecordAlreadyExistsException | ConfigException e) {
-            System.err.println(e.getMessage());
-            response.setHeader(e.getClass().getSimpleName(), gameName);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            response.setHeader("JAXBException", gameName);
+        } catch (RecordAlreadyExistsException e) {
+            // player is already in game, transfer to its game
+            request.getSession().setAttribute(Constants.GAME_NAME_ATTRIBUTE_NAME, gameName);
+            response.sendRedirect(Constants.GAME_URI);
+        } catch (JAXBException | ConfigException e) {
+            // error in parsing file
+            handleErrorInParsingFile(request, response, fileName, e);
         }
     }
 
-    private void proccessGameRecord(String gameName, String creatorName, Game game) throws RecordAlreadyExistsException {
+    private void handleErrorInParsingFile(HttpServletRequest request, HttpServletResponse response, String fileName, Exception e) throws ServletException, IOException {
+        response.setContentType("text/html");
+        try (PrintWriter out = response.getWriter()){
+            out.format("<script>document.getElementById('errorPlaceHolder').innerHTML='Couldn't parse file %s. %s'</script>", fileName, e.getMessage());
+            RequestDispatcher dispatcher = request.getRequestDispatcher(Constants.GAME_ROOM_URI);
+            dispatcher.include(request, response);
+        }
+    }
+
+    private void processGameRecord(String gameName, String creatorName, Game game) throws RecordAlreadyExistsException {
         GameRecordsManager gameRecordsManager = ServletUtils.getGameRecordsManager(getServletContext());
-        // is creator
+
         GameRecord gameRecord = createGameRecord(gameName, creatorName, game);
         gameRecordsManager.addGameRecord(gameRecord);
     }
 
     private GameRecord createGameRecord(String gameName, String creatorName, Game game) throws RecordAlreadyExistsException {
         GameRecord gameRecord = new GameRecord(gameName, creatorName, game);
-        gameRecord.setGameStatus(GameStatus.ONE_PLAYER);
+        gameRecord.setGameStatus(GameStatus.ONE_PLAYER);  // creator - first player
 
         return gameRecord;
     }
 
 
     /**
-     * Returns a short description of the servlet.
+     * Returns a short description of the servlets.
      *
-     * @return a String containing servlet description
+     * @return a String containing servlets description
      */
     @Override
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
-
-    private static String readFromInputStream(InputStream inputStream) {
-        return new Scanner(inputStream).useDelimiter("\\Z").next();
-    }
-
-    private String getAbsolutePathOfResource(String resource) {
-        URL url = this.getClass().getResource(resource);
-        return url != null ? url.getPath() : "?";
-    }
-
-    private String getSubmittedFile(HttpServletRequest request) throws IOException, ServletException {
-        StringBuilder fileContent = new StringBuilder();
-
-        Collection<Part> parts = request.getParts();
-
-        for ( Part part : parts ) {
-            //to write the content of the file to an actual file in the system (will be created at c:\samplefile)
-            part.write("samplefile");
-
-            //to write the content of the file to a string
-            fileContent.append(readFromInputStream(part.getInputStream()));
-        }
-
-        return fileContent.toString();
-    }
-
-
-    private String getResourceContent(String resource) {
-        StringBuilder result = new StringBuilder();
-        try (InputStream stream = this.getClass().getResourceAsStream(resource)) {
-            Scanner scanner = new Scanner(stream, "UTF-8");
-            while (scanner.hasNextLine()) {
-                result.append(scanner.nextLine()).append("\n\r");
-            }
-        } catch (Exception exception) {
-            return "Error: Failed to read file!";
-        }
-        return result.toString();
-    }
 
 
     private static String getSubmittedFileName(Part part) {
@@ -155,9 +127,9 @@ public class ReadXMLServlet extends HttpServlet {
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
+     * @param request  servlets request
+     * @param response servlets response
+     * @throws ServletException if a servlets-specific error occurs
      * @throws IOException      if an I/O error occurs
      */
     @Override
