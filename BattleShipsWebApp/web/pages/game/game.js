@@ -13,6 +13,7 @@ $(window).on('load', function () {
 
     intervalRefreshLists = setInterval(function () {
         // add any other updates you want here...
+        ajaxGetMessagesFromServer();
         ajaxUpdateCurrentGame();
     }, INTERVAL_LENGTH);
 });

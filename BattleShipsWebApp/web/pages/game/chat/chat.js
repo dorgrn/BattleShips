@@ -1,32 +1,53 @@
 // auto-scroll from https://stackoverflow.com/questions/25505778/automatically-scroll-down-chat-div
 
-const messages = document.getElementById('messages');
+function onSendMessage(message) {
 
-function onSendMessage() {
-    
+    ajaxSendMessageToServer(message);
+    $("#messages").text('');
 }
 
-function appendMessage(username, message) {
-    const messageText = username + ": " + message;
-    const messageBody = document.getElementsByClassName('message')[0];
-    const newMessage = message.cloneNode(messageBody);
-    newMessage.textContent = messageText;
-    messages.appendChild(newMessage);
+function ajaxSendMessageToServer(message) {
+    $.ajax({
+        url: '/game/chat/sendMessage',
+        data: {
+            "CHAT_MESSAGE_ATTRIBUTE": message
+        },
+        type: 'GET',
+        success: function () {
+        }
+    });
 }
 
-function getMessages() {
-    // Prior to getting your messages.
-    shouldScroll = messages.scrollTop + messages.clientHeight === messages.scrollHeight;
-    /*
-     * Get your messages, we'll just simulate it by appending a new one syncronously.
-     */
-    appendMessage();
-    // After getting your messages.
-    if (!shouldScroll) {
-        scrollToBottom();
-    }
+function ajaxGetMessagesFromServer() {
+    $.ajax({
+        url: CHAT_GET_MESSAGES_URI,
+        dataType: 'json',
+        type: 'GET',
+        success: function (messages) {
+            refreshMessages(messages);
+        }
+    });
 }
 
-function scrollToBottom() {
-    messages.scrollTop = messages.scrollHeight;
+function refreshMessages(messagesArray) {
+    var messagesDiv = $("#messages");
+    messagesDiv.text('');
+
+    $.each(messagesArray || [], function (index, valueArray) {
+        $.each(valueArray || [] , function (index2, message) {
+            appendMessage(message);
+        });
+    });
+
+    scrollToBottom(messagesDiv);
+}
+
+function appendMessage(message) {
+    const messageBody = "<p>" + message.username + ": " + message.chatString + "</p>";
+    $("#messages").append(messageBody);
+}
+
+
+function scrollToBottom(messageDiv) {
+    messageDiv.scrollTop = messageDiv.scrollHeight / 10;
 }

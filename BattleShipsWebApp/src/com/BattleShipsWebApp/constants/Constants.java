@@ -8,7 +8,6 @@ public class Constants {
     public static final String REDIRECT_ATTRIBUTE_NAME = "REDIRECT";
     public static final String PLAYER_TYPE_ATTRIBUTE = "PLAYER_TYPE";
 
-    public static final String CHAT_PARAMETER = "userstring";
     public static final String CHAT_VERSION_PARAMETER = "chatversion";
 
     public static final String CALLER_URI_ATTRIBUTE = "CALLER_URI";
@@ -26,4 +25,5 @@ public class Constants {
 
     public static final String SESSION_GAME_RECORDS_ATTRIBUTE_NAME = "SESSION_RECORDS_ATTRIBUTE";
     public static final int INT_PARAMETER_ERROR = -1;
+    public static final String CHAT_MESSAGE_ATTRIBUTE = "CHAT_MESSAGE_ATTRIBUTE" ;
 }

@@ -161,7 +161,20 @@ button{
     height: 100%;
 }
 
+.chat button{
+    display: inline-block;
+    height: 20%;
+}
+
+.chat div{
+    border: 2px solid dodgerblue;
+    border-radius: 12px;
+}
+
+#messages {
+}
+
 body, html {
-    font-family: Verdana;
+    font-family: Verdana, sans-serif;
     font-size: 14px;
 }

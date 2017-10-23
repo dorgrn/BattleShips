@@ -36,7 +36,7 @@ public class ServletUtils {
 
     public static ChatManager getChatManager(ServletContext servletContext) {
         if (servletContext.getAttribute(CHAT_MANAGER_ATTRIBUTE_NAME) == null) {
-            servletContext.setAttribute(CHAT_MANAGER_ATTRIBUTE_NAME, new GameRecordsManager());
+            servletContext.setAttribute(CHAT_MANAGER_ATTRIBUTE_NAME, new ChatManager());
         }
         return (ChatManager) servletContext.getAttribute(CHAT_MANAGER_ATTRIBUTE_NAME);
     }

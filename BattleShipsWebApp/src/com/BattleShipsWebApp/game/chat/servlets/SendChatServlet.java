@@ -33,7 +33,7 @@ public class SendChatServlet extends HttpServlet {
             return;
         }
 
-        String userChatString = request.getParameter(Constants.CHAT_PARAMETER);
+        String userChatString = request.getParameter(Constants.CHAT_MESSAGE_ATTRIBUTE);
         if (userChatString != null && !userChatString.isEmpty()) {
             logServerMessage("Adding chat string from " + username + ": " + userChatString);
             chatManager.addChatString(userChatString, username);

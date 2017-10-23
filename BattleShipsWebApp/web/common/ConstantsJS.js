@@ -9,6 +9,8 @@ const SIGN_UP_URI = '/pages/signup/signup.html';
 const ADD_USER_URI = '/gamesRoom/gameRecords/addUser';
 const GAME_URI = '/pages/game/game.html';
 const UPDATE_GAME_STATUS_URI = '/gamesRoom/updateGameStatus';
+const CHAT_SEND_MESSAGE_URI = "/game/chat/sendMessage";
+const CHAT_GET_MESSAGES_URI = "/game/chat/getMessages";
 
 // ATTRIBUTES
 const USERNAME_ATTRIBUTE = "USERNAME";
@@ -18,6 +20,7 @@ const USER_ROLE_ATTRIBUTE = 'USER_ROLE';
 const REDIRECT_ATTRIBUTE = 'REDIRECT';
 const ERROR_ATTRIBUTE = 'ERROR_NAME';
 const GAME_JSON = 'GAME_JSON';
+const CHAT_MESSAGE_ATTRIBUTE = "CHAT_MESSAGE_ATTRIBUTE" ;
 
 // CONSTS
 // USER_ROLE

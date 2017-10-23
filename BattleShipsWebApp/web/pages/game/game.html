@@ -7,60 +7,67 @@
     <link rel="stylesheet" href="game.css">
     <script src="/common/jquery-2.0.3.min.js"></script>
     <script src="game.js"></script>
+    <script src="/pages/game/chat/chat.js"></script>
     <script src="/common/ConstantsJS.js"></script>
 </head>
 <body style="height:100%">
-    <div style="height:700px">
-        <div style="padding:1px 16px;" class="watchers">
-            <p id="myPlayerName" style="padding-top: 5px; font-size: 16px"></p>
-            <p style="padding-top: 1px; font-size: 12px">Opponent:</p>
-            <p id="opponentName" style="padding-top: 1px; font-size: 12px">None</p>
+<div style="height:700px">
+    <div style="padding:1px 16px;" class="watchers">
+        <p id="myPlayerName" style="padding-top: 5px; font-size: 16px"></p>
+        <p style="padding-top: 1px; font-size: 12px">Opponent:</p>
+        <p id="opponentName" style="padding-top: 1px; font-size: 12px">None</p>
+        <p>&emsp;&emsp;</p>
+        <table class="w3-table w3-striped">
+            <thead>
+            <tr class="w3-blue-gray">
+                <th style="padding-top:10px;">Watchers</th>
+            </tr>
+            </thead>
+            <tbody id="watchersTable"></tbody>
+        </table>
+    </div>
+    <div class="main">
+        <div class="battleshipHeader">Battleship Game</div>
+        <table id="battleshipBoard" class="battleshipBoard"></table>
+        <table id="traceBoard" class="trackingBoard"></table>
+        <div class="statistics" style="padding-top: 5px;">
+            <p><b>Data & Statistics</b></p>
+            <p id="currentPlayer">Current Player</p>
+            <p id="playerScore">Player Score</p>
+            <p id="turnsCompleted">Turns Completed</p>
+            <p id="totalHits">Total Hits</p>
+            <p id="totalMisses">Total Misses</p>
+            <p id="timePerMove">Average Time Per Move</p>
+            <p id="minesLeft">Mines Left</p>
+            <p></p>
+        </div>
+        <div class="myBattleships" style="margin-top: 2em; margin-left: 2em;">
+        </div>
+        <div class="opponentBattleships" style="margin-top: 2em; margin-right: 2em">
+        </div>
+        <div class="bottomTextsLine">
             <p>&emsp;&emsp;</p>
-            <table class="w3-table w3-striped">
-                <thead>
-                <tr class="w3-blue-gray">
-                    <th style="padding-top:10px;">Watchers</th>
-                </tr>
-                </thead>
-                <tbody id="watchersTable"></tbody>
-            </table>
+            <p id="generalData">My Score: 0 &emsp;&emsp; Opponent's Score: 0 &emsp;&emsp; Time Passed: 0 &emsp;&emsp;
+                Current Move Number: 0</p>
+            <p id="commentsLine" style="color: red">Comments Line: ............</p>
         </div>
-        <div class="main">
-            <div class="battleshipHeader">Battleship Game</div>
-            <table id="battleshipBoard" class="battleshipBoard"></table>
-            <table id="traceBoard" class="trackingBoard"></table>
-            <div class="statistics" style="padding-top: 5px;">
-                <p><b>Data & Statistics</b></p>
-                <p id="currentPlayer">Current Player</p>
-                <p id="playerScore">Player Score</p>
-                <p id="turnsCompleted">Turns Completed</p>
-                <p id="totalHits">Total Hits</p>
-                <p id="totalMisses">Total Misses</p>
-                <p id="timePerMove">Average Time Per Move</p>
-                <p id="minesLeft">Mines Left</p>
-                <p></p>
-            </div>
-            <div class="myBattleships" style="margin-top: 2em; margin-left: 2em;">
-            </div>
-            <div class="opponentBattleships" style="margin-top: 2em; margin-right: 2em">
-            </div>
-            <div class="bottomTextsLine">
-                <p>&emsp;&emsp;</p>
-                <p id="generalData">My Score: 0 &emsp;&emsp; Opponent's Score: 0 &emsp;&emsp; Time Passed: 0 &emsp;&emsp; Current Move Number: 0</p>
-                <p id="commentsLine" style="color: red">Comments Line: ............</p>
-            </div>
-            <div style="float: right">
-                <button type="button" onclick="backToGamesRoom()" id="retireButton">Retire</button>
-                <button type="button" onclick="logout()" id="exitButton">Exit</button>
-            </div>
-        </div>
-        <div class="chat">
-            chat
-            <p>another line...</p>
-            <p>and another...</p>
+        <div style="float: right">
+            <button type="button" onclick="backToGamesRoom()" id="retireButton">Retire</button>
+            <button type="button" onclick="logout()" id="exitButton">Exit</button>
         </div>
     </div>
 
-    <p hidden id="myPlayerType"></p> <!-- hidden playerType -->
+    <div class="chat">
+        <div id="messages"></div>
+        <div id="sendMessage">
+
+            <input type="text" id="sendContent"/>
+            <button type="button" onclick="onSendMessage($('#sendContent').val());">Send</button>
+        </div>
+
+    </div>
+</div>
+
+<p hidden id="myPlayerType"></p> <!-- hidden playerType -->
 </body>
 </html>
