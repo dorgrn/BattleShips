@@ -53,7 +53,7 @@ public class AddUserServlet extends HttpServlet {
                     "He's a " + userRole);*/
 
         } catch (RecordAlreadyExistsException | GameRecordSizeException e) {
-           setAttributes(request, gameName, userRole, playerType);
+            setAttributes(request, gameName, userRole, playerType);
 
         }
     }

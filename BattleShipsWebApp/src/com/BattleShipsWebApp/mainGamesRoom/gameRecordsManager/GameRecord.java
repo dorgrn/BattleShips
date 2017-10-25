@@ -1,7 +1,9 @@
 package com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager;
 
 import BattleShipsEngine.engine.Game;
+import BattleShipsEngine.engine.GameBoard;
 import BattleShipsEngine.engine.Player;
+import BattleShipsEngine.engine.Point;
 import com.BattleShipsWebApp.exceptions.GameRecordSizeException;
 import com.BattleShipsWebApp.exceptions.RecordAlreadyExistsException;
 import com.BattleShipsWebApp.exceptions.RecordDoesNotExistsException;
@@ -132,7 +134,9 @@ public class GameRecord {
         this.gameStatus = gameStatus;
     }
 
-    public GameStatus getGameStatus() {
-        return gameStatus;
-    }
+    public void swapPlayerTurn() { game.swapCurrentPlayer(); }
+
+    public Game.HitStatus makeTurn(Point pointToHit, long turnStartTime) { return game.makeTurn(pointToHit, turnStartTime); }
+
+    public void placeMine(Point pointToPlace) { game.placeMine(pointToPlace); }
 }

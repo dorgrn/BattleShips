@@ -21,6 +21,8 @@ const REDIRECT_ATTRIBUTE = 'REDIRECT';
 const ERROR_ATTRIBUTE = 'ERROR_NAME';
 const GAME_JSON = 'GAME_JSON';
 const CHAT_MESSAGE_ATTRIBUTE = "CHAT_MESSAGE_ATTRIBUTE" ;
+const MAKE_TURN_URI = '/gamesRoom/makeTurn';
+const PLACE_MINE_URI = '/gamesRoom/placeMine';
 
 // CONSTS
 // USER_ROLE

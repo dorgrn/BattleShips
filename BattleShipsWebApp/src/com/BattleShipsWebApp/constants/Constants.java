@@ -26,4 +26,5 @@ public class Constants {
     public static final String SESSION_GAME_RECORDS_ATTRIBUTE_NAME = "SESSION_RECORDS_ATTRIBUTE";
     public static final int INT_PARAMETER_ERROR = -1;
     public static final String CHAT_MESSAGE_ATTRIBUTE = "CHAT_MESSAGE_ATTRIBUTE" ;
+    public static final String BUTTON_ID_ATTRIBUTE_NAME = "BUTTON_ID";
 }

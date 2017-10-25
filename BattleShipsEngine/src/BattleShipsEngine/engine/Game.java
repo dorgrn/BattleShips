@@ -52,6 +52,7 @@ public class Game implements Serializable {
             case GameBoard.EMPTY_SYMBOL:
                 handlePlayerMissed(pointToHit, currentPlayer);
                 result = HitStatus.MISS;
+                enemyPrimaryGrid.setPointInBoard(pointToHit, GameBoard.MISS_SYMBOL);
                 break;
             case GameBoard.SHIP_SYMBOL:
                 handleEnemyWasHit(enemy, pointToHit);
@@ -131,6 +132,7 @@ public class Game implements Serializable {
 
         primaryGrid.setPointInBoard(toPlace, GameBoard.MINE_SYMBOL);
         currentPlayer.addMine(mine);
+        currentPlayer.setMinesToPlace(currentPlayer.getAmountOfMinesToPlace() - 1);
     }
 
 
@@ -163,7 +165,41 @@ public class Game implements Serializable {
         Player enemy = getOtherPlayer(player);
         player.getTrackingGrid().setPointInBoard(hitPoint, GameBoard.MISS_SYMBOL);
         enemy.getPrimaryGrid().setPointInBoard(hitPoint, GameBoard.MISS_SYMBOL);
+        swapCurrentPlayer();
+        HitStatus hitStatus = generateOppositeAttack(hitPoint);
         enemy.removeMine(hitPoint);
+    }
+
+    public HitStatus generateOppositeAttack(Point pointToHit){
+        HitStatus result = null;
+
+        Player enemy = getOtherPlayer(currentPlayer);
+        GameBoard enemyPrimaryGrid = enemy.getPrimaryGrid();
+
+        char hitOnEnemyBoard = enemyPrimaryGrid.getBoard()[pointToHit.getX()][pointToHit.getY()];
+        char hitOnTrackingBoard = currentPlayer.getTrackingGrid().getBoard()[pointToHit.getX()][pointToHit.getY()];
+
+        if (hitOnTrackingBoard != GameBoard.EMPTY_SYMBOL) {
+            return HitStatus.ALREADY_TRIED_POINT;
+        }
+
+        // check what is in enemy's primary grid in hit position
+        switch (hitOnEnemyBoard) {
+            case GameBoard.EMPTY_SYMBOL:
+                handlePlayerMissed(pointToHit, currentPlayer);
+                result = HitStatus.MISS;
+                enemyPrimaryGrid.setPointInBoard(pointToHit, GameBoard.MISS_SYMBOL);
+                break;
+            case GameBoard.SHIP_SYMBOL:
+                handleEnemyWasHit(enemy, pointToHit);
+                result = handlePlayerShipWasHit(pointToHit, enemy);
+                break;
+            case GameBoard.MINE_SYMBOL:
+                result = handlePlayerHitMine(pointToHit, currentPlayer);
+                break;
+        }
+
+        return result;
     }
 
     public HitStatus handlePlayerShipWasHit(Point hitPoint, Player player) {
