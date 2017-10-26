@@ -1,9 +1,10 @@
-package com.BattleShipsWebApp.mainGamesRoom.servlets.gamesManagement;
+package com.BattleShipsWebApp.game.servlets;
 
-import com.BattleShipsWebApp.constants.Constants;
-import com.BattleShipsWebApp.exceptions.GameRecordSizeException;
+import BattleShipsEngine.engine.Game;
+import BattleShipsEngine.engine.Player;
 import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameRecord;
 import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameRecordsManager;
+import com.BattleShipsWebApp.registration.users.User;
 import com.BattleShipsWebApp.utils.ServletUtils;
 import com.BattleShipsWebApp.utils.SessionUtils;
 
@@ -14,40 +15,44 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet(name = "DeleteGameRecordServlet", urlPatterns = {"/gamesRoom/gameRecords/deleteGameRecord"})
-public class DeleteGameRecordServlet extends HttpServlet {
+@WebServlet(name = "RemovePlayersServlet", urlPatterns = {"/game/removePlayersFromGame"})
+public class RemovePlayersServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+
         // needed params
-        final String gameNameParameter = request.getParameter(Constants.GAME_NAME_ATTRIBUTE_NAME);
-        final String userName = SessionUtils.getSessionUsername(request);
+        final String gameNameParameter = SessionUtils.getSessionGameName(request);
+        final String userType = SessionUtils.getSessionUserType(request);
+        final GameRecordsManager gameRecordsManager = ServletUtils.getGameRecordsManager(getServletContext());
 
-        GameRecordsManager gameRecordsManager = ServletUtils.getGameRecordsManager(getServletContext());
+
+        // get game
         final GameRecord gameRecord = gameRecordsManager.getGameByName(gameNameParameter);
+        final Game game = gameRecord.getGame();
 
-        try {
-            if (gameRecord.getCreator().getUserName().equals(userName)){
-                gameRecordsManager.removeGameRecord(gameNameParameter);
-            }
-            else{
-                // non-creator trying to delete
-                //
-            }
-        } catch (GameRecordSizeException e) {
-            // handle
-            //e.printStackTrace();
-        }
+        User participantUser = new User(SessionUtils.getSessionUsername(request));
+        gameRecord.clearParticipants();
     }
+
+
+    private void handleRetirement(String userType, Game game) {
+        Player player = game.getPlayerByType(Player.Type.valueOf(userType));
+
+        Player enemy = game.getOtherPlayer(player);
+
+        enemy.setHasWon(true);
+    }
+
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
 
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlets request
-     * @param response servlets response
-     * @throws ServletException if a servlets-specific error occurs
+     * @param request  servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
      * @throws IOException      if an I/O error occurs
      */
     @Override
@@ -59,9 +64,9 @@ public class DeleteGameRecordServlet extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlets request
-     * @param response servlets response
-     * @throws ServletException if a servlets-specific error occurs
+     * @param request  servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
      * @throws IOException      if an I/O error occurs
      */
     @Override
@@ -71,12 +76,13 @@ public class DeleteGameRecordServlet extends HttpServlet {
     }
 
     /**
-     * Returns a short description of the servlets.
+     * Returns a short description of the servlet.
      *
-     * @return a String containing servlets description
+     * @return a String containing servlet description
      */
     @Override
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
 }

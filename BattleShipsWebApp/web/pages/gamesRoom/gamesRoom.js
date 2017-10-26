@@ -130,6 +130,28 @@ function refreshLists() {
     ajaxUsersList();
     ajaxGamesList();
 }
+function deleteGame(game) {
+    if (game.gameStatus !== EMPTY_GAME){
+        alert("Game " + game.gameName + " isn't empty, only empty games can be deleted.");
+    }
+
+    ajaxDeleteGameRecord(game);
+
+}
+
+function ajaxDeleteGameRecord(game) {
+    $.ajax({
+        type: 'GET',
+        url: DELETE_GAME_RECORD_URI,
+        dataType: 'html',
+        data: { // should match Constants
+            "GAME_NAME": game.gameName,
+        },
+        success: function (data, textStatus, request) {
+            //console.log("got to success in ajax gameStatus");
+        }
+    });
+}
 
 // exitGame assumes #usernamenav is set to username
 function logout() {

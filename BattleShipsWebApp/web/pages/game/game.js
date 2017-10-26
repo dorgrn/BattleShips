@@ -54,19 +54,6 @@ function ajaxGetCurrentUserType() {
     });
 }
 
-function ajaxCreateStatsticsPage() {
-    $.ajax({
-        url: '/game/statisticsPage',
-        type: 'POST',
-        contentType: 'application/json; charset=utf-8',
-        success: function (users) {
-            $.each(users || [], function (index, username) {
-                $("#myPlayerName").text(username);
-            });
-        }
-    });
-}
-
 function ajaxGetCurrentGameAndUpdateBoards(btn) {
     $.ajax({
         url: '/game/currentGameRecord',
@@ -81,7 +68,7 @@ function ajaxGetCurrentGameAndUpdateBoards(btn) {
     });
 }
 
-function ajaxGetCurrentGameAndUpdateStatus(newStatus){
+function ajaxGetCurrentGameAndUpdateStatus(newStatus) {
     $.ajax({
         url: '/game/currentGameRecord',
         type: 'GET',
@@ -91,25 +78,12 @@ function ajaxGetCurrentGameAndUpdateStatus(newStatus){
             // console.log("before");
         },
         success: function (gameRecord) {
+            console.log("got to ajaxGetCurrentGameAndUpdateStatus success");
             ajaxUpdateGameStatus(gameRecord.getGameName, newStatus);
         }
     });
 }
 
-function ajaxInsertCurrentGameToId() {
-    $.ajax({
-        url: '/game/currentGameRecord',
-        type: 'GET',
-        cache: false,
-        contentType: 'application/json; charset=utf-8',
-        beforeSend: function () {
-            // console.log("before");
-        },
-        success: function (gameRecord) {
-            $("#myGameRecord").text(gameRecord);
-        }
-    });
-}
 
 function ajaxUpdateCurrentGame() {
     $.ajax({
@@ -208,9 +182,7 @@ function updateDataOnScreen(gameRecord) {
 }
 
 function updateGameActiveState(amountOfParticipants) {
-    if (amountOfParticipants === 2) {
-        gameActive = true;
-    }
+    gameActive = (amountOfParticipants === 2);
 }
 
 function allowDrop(ev) {
@@ -258,13 +230,12 @@ function ajaxPlaceMine(gameRecord, buttonID) {
 
 function showPlayerWon(username) {
 
-    if (username === $("#myPlayerName")){
-        alert("Congratulations! " + username + " you Won!");
+    if (username === $("#myPlayerName")) {
+        confirm("Congratulations! " + username + " you Won!");
     }
-    else{
-        alert("Sorry, you lose");
+    else {
+        confirm("Sorry, you lose.");
     }
-
 }
 
 function ajaxFindGameWinner() {
@@ -272,34 +243,39 @@ function ajaxFindGameWinner() {
         type: 'GET',
         url: '/game/findWinner',
         success: function (winnerPlayer) {
-            if (winnerPlayer){
-                handleGameOver(winnerPlayer.GAME_WINNER_ATTRIBUTE);
+            if (winnerPlayer) {
+                handleGameOver(winnerPlayer);
             }
         }
     });
 }
 
+function retireFromGame() {
+    alert("You retired! Returning to games room!");
+
+    handleGameOver(null);
+}
+
+
 
 function handleGameOver(winnerPlayer) {
     gameActive = false;
-    showPlayerWon(winnerPlayer);
+
+    if (winnerPlayer !== null){
+        showPlayerWon(winnerPlayer);
+    }
+
     disableAllButtons();
+    alert("Press OK to return to the Games Room");
     stopListsRefresh();
-
-    intervalCheckRestartGame = setInterval()
-
-    intervalCheckRestartGame = setInterval(function () {
-        // add any updates here...
-
-    }, INTERVAL_LENGTH);
-
-    // should enable another button? TODO
-
+    ajaxRemovePlayersFromGameRecord();
+    startGame();
+    window.location.replace(GAMES_ROOM_URI);
 }
 
 function disableAllButtons() {
 
-    // TODO: roy please implement this
+    // *** TODO: Roy please implement this ***
 
     // $(function () {
     //     var buttons = $(".boardButton");
@@ -309,50 +285,44 @@ function disableAllButtons() {
     // });
 }
 
-// assumes current player retires from game
-function ajaxRetireFromGame() {
+function ajaxRemovePlayersFromGameRecord() {
     $.ajax({
         type: 'GET',
-        url: '/game/retireFromGame',
+        url: '/game/removePlayersFromGame',
         success: function () {
-            logoutFromGame();
         }
     });
 }
 
-function logoutFromGame() {
-    if (gameActive) {
-        ajaxFindGameWinner();
-    }
-    ajaxGetCurrentGameAndUpdateStatus(REMOVE_PLAYER);
-    window.location.replace(GAMES_ROOM_URI);
-}
+// function logoutFromGame() {
+//     window.location.replace(GAMES_ROOM_URI);
+// }
 
-function exitGame() {
-    logout();
-    // $.ajax({
-    //     type: 'GET',
-    //     url: SIGN_UP_URI,
-    //     data: {
-    //         "CALLER_URI": GAME_URI
-    //     },
-    //     success: function () {
-    //         window.location.replace(SIGN_UP_URI);
-    //     }
-    // });
-}
+// function exitGame() {
+//     logout();
+//     // $.ajax({
+//     //     type: 'GET',
+//     //     url: SIGN_UP_URI,
+//     //     data: {
+//     //         "CALLER_URI": GAME_URI
+//     //     },
+//     //     success: function () {
+//     //         window.location.replace(SIGN_UP_URI);
+//     //     }
+//     // });
+// }
 
-function ajaxUpdateGameStatus(game, removeOrAdd) {
-    $.ajax({
-        type: 'POST',
-        url: UPDATE_GAME_STATUS_URI,
-        dataType: 'html',
-        data: { // should match Constants
-            "GAME_NAME": game.gameName,
-            "GAME_STATUS": removeOrAdd
-        },
-        success: function (data, textStatus, request) {
-            //console.log("got to success in ajax gameStatus");
-        }
-    });
-}
+// function ajaxUpdateGameStatus(game, removeOrAdd) {
+//     $.ajax({
+//         type: 'POST',
+//         url: UPDATE_GAME_STATUS_URI,
+//         dataType: 'html',
+//         data: { // should match Constants
+//             "GAME_NAME": game.gameName,
+//             "GAME_STATUS": removeOrAdd
+//         },
+//         success: function (data, textStatus, request) {
+//             //console.log("got to success in ajax gameStatus");
+//         }
+//     });
+// }

@@ -171,4 +171,9 @@ public class GameRecord {
 
         return result.orElse(null);
     }
+
+    public void clearParticipants() {
+        participants.clear();
+        gameStatus = GameStatus.EMPTY;
+    }
 }

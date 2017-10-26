@@ -1,3 +1,17 @@
+function createDeleteLink(game) {
+    var result = "<td>";
+
+    if (game && game.gameStatus === EMPTY_GAME && game.creator.username === $("#usernameNav").text()){
+        result += "<a href='' style='color: Red' onclick='return false;' class=deleteLink>X</a>";
+    }
+    else {
+        result +="-";
+    }
+    result += "</td>";
+
+    return result;
+}
+
 function refreshGamesList(games) {
     //clear all current users
     var tableGame = $("#table_games");
@@ -10,7 +24,7 @@ function refreshGamesList(games) {
         //console.log("Adding game #" + index + ": " + game.gameName);
 
         rows +=
-            "<tr><td><a href='' style='color: Red' onclick='return false;' class=deleteLink>X</a></td>"+
+                "<tr>"+ createDeleteLink(game) +
                 "<td>" + game.gameName + "</td>" +
                 "<td>" + game.creator.username + "</td>" +
                 "<td>" + game.boardSize + "</td>" +
@@ -35,28 +49,7 @@ function refreshGamesList(games) {
     $(rows).appendTo("#table_games tbody");
 }
 
-function deleteGame(game) {
-    if (game.gameStatus !== EMPTY_GAME){
-        alert("Game " + game.gameName + " isn't empty, only empty games can be deleted.");
-    }
 
-    ajaxDeleteGameRecord(game);
-
-}
-
-function ajaxDeleteGameRecord(game) {
-        $.ajax({
-            type: 'GET',
-            url: DELETE_GAME_RECORD_URI,
-            dataType: 'html',
-            data: { // should match Constants
-                "GAME_NAME": game.gameName,
-            },
-            success: function (data, textStatus, request) {
-                //console.log("got to success in ajax gameStatus");
-            }
-        });
-}
 
 function stopListsRefresh() {
     if (intervalRefreshLists !== null) {
