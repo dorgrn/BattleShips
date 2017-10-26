@@ -54,7 +54,6 @@ public class AddUserServlet extends HttpServlet {
 
         } catch (RecordAlreadyExistsException | GameRecordSizeException e) {
             setAttributes(request, gameName, userRole, playerType);
-
         }
     }
 
@@ -62,7 +61,7 @@ public class AddUserServlet extends HttpServlet {
         //set these attributes to current session
         request.getSession(true).setAttribute(Constants.GAME_NAME_ATTRIBUTE_NAME, gameName);
         // player type and user role are the same as the player
-        //request.getSession(true).setAttribute(Constants.PLAYER_TYPE_ATTRIBUTE, playerType);
+        request.getSession(true).setAttribute(Constants.PLAYER_TYPE_ATTRIBUTE, playerType);
         request.getSession(true).setAttribute(Constants.USER_ROLE_ATTRIBUTE, userRole);
     }
 

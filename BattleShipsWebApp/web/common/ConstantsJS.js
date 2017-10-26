@@ -3,7 +3,7 @@ const USERS_SERVLET_URI = '/gamesRoom/users';
 const GAME_RECORDS_SERVLET_URI = '/gamesRoom/gameRecords';
 const UPLOAD_XML_URI = '/readResource/readxml';
 const GET_USERNAME_URI = '/gamesRoom/currentUser';
-const LOGOUT_SERVLET_URI = '/registration/logout';
+const LOGOUT_SERVLET_URI = '/registration/exitGame';
 const GAMES_ROOM_URI = '/pages/gamesRoom/gamesRoom.html';
 const SIGN_UP_URI = '/pages/signup/signup.html';
 const ADD_USER_URI = '/gamesRoom/gameRecords/addUser';
@@ -11,6 +11,8 @@ const GAME_URI = '/pages/game/game.html';
 const UPDATE_GAME_STATUS_URI = '/gamesRoom/updateGameStatus';
 const CHAT_SEND_MESSAGE_URI = "/game/chat/sendMessage";
 const CHAT_GET_MESSAGES_URI = "/game/chat/getMessages";
+const RETIRE_FROM_GAME_URI = "/game/retireFromGame";
+const DELETE_GAME_RECORD_URI = '/gamesRoom/gameRecords/deleteGameRecord';
 
 // ATTRIBUTES
 const USERNAME_ATTRIBUTE = "USERNAME";
@@ -18,7 +20,7 @@ const CALLER_URI_ATTRIBUTE = 'CALLER_URI';
 const GAME_NAME_ATTRIBUTE = 'GAME_NAME';
 const USER_ROLE_ATTRIBUTE = 'USER_ROLE';
 const REDIRECT_ATTRIBUTE = 'REDIRECT';
-const ERROR_ATTRIBUTE = 'ERROR_NAME';
+const ERROR_ATTRIBUTE = 'ERROR_ATTRIBUTE';
 const GAME_JSON = 'GAME_JSON';
 const CHAT_MESSAGE_ATTRIBUTE = "CHAT_MESSAGE_ATTRIBUTE" ;
 const MAKE_TURN_URI = '/gamesRoom/makeTurn';
@@ -37,3 +39,7 @@ const FULL_GAME = 'FULL';
 // PLAYER TYPE
 const PLAYER_ONE = 'PLAYER_ONE';
 const PLAYER_TWO = 'PLAYER_TWO';
+
+// GAME STATUS ACTIONS
+const REMOVE_PLAYER = 'REMOVE_PLAYER';
+const ADD_PLAYER = 'ADD_PLAYER';

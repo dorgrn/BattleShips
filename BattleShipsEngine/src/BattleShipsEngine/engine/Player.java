@@ -89,7 +89,7 @@ public class Player implements Serializable {
         return hasWon;
     }
 
-    void setHasWon(boolean set) {
+    public void setHasWon(boolean set) {
         hasWon = set;
     }
 

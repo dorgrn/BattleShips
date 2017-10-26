@@ -4,6 +4,7 @@ import BattleShipsEngine.engine.Game;
 import BattleShipsEngine.engine.GameBoard;
 import BattleShipsEngine.engine.Player;
 import BattleShipsEngine.engine.Point;
+import com.BattleShipsWebApp.constants.Constants;
 import com.BattleShipsWebApp.exceptions.GameRecordSizeException;
 import com.BattleShipsWebApp.exceptions.RecordAlreadyExistsException;
 import com.BattleShipsWebApp.exceptions.RecordDoesNotExistsException;
@@ -13,6 +14,7 @@ import com.BattleShipsWebApp.registration.users.Watcher;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 public class GameRecord {
@@ -84,6 +86,21 @@ public class GameRecord {
         return resultStatus;
     }
 
+    private GameStatus getGameStatusFormLeaving(GameStatus gameStatus) throws GameRecordSizeException {
+        GameStatus resultStatus = null;
+        switch (gameStatus) {
+            case EMPTY:
+                throw new GameRecordSizeException("Game is empty");
+            case ONE_PLAYER:
+                resultStatus = GameStatus.EMPTY;
+                break;
+            case FULL:
+               resultStatus = GameStatus.ONE_PLAYER;
+               break;
+        }
+        return resultStatus;
+    }
+
     private GameStatus getGameStatusFormJoin(GameStatus gameStatus) throws GameRecordSizeException {
         GameStatus resultStatus = null;
         switch (gameStatus) {
@@ -99,12 +116,14 @@ public class GameRecord {
         return resultStatus;
     }
 
-    public void removeParticipant(User user) throws RecordDoesNotExistsException {
+    public void removeParticipant(User user) throws RecordDoesNotExistsException, GameRecordSizeException {
         if (!participants.contains(new Participant(user.getUserName(), null))) {
             throw new RecordDoesNotExistsException("User is not a participant! " + user.getUserName());
         }
 
         participants.remove(new Participant(user.getUserName(), null));
+
+        gameStatus = getGameStatusFormLeaving(gameStatus);
     }
 
     public void removeWatcher(User user) throws RecordDoesNotExistsException {
@@ -139,4 +158,17 @@ public class GameRecord {
     public Game.HitStatus makeTurn(Point pointToHit, long turnStartTime) { return game.makeTurn(pointToHit, turnStartTime); }
 
     public void placeMine(Point pointToPlace) { game.placeMine(pointToPlace); }
+
+    public Game getGame() {
+        return game;
+    }
+
+    public String getUsernameByPlayerType(Player.Type playerType) {
+        Optional<String> result = participants.stream()
+                .filter(participant -> participant.getPlayerType() == playerType)
+                .findFirst()
+                .map(Participant::getUserName);
+
+        return result.orElse(null);
+    }
 }

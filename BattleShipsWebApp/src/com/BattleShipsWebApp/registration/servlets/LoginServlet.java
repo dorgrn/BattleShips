@@ -63,7 +63,8 @@ public class LoginServlet extends HttpServlet {
     private void usernameExists(HttpServletRequest request, HttpServletResponse response, String usernameFromParameter) throws IOException {
         request.getSession(true).setAttribute(Constants.USERNAME, usernameFromParameter);
         System.out.println("On login, User already exists.");
-        response.sendRedirect(GAMES_ROOM_URL);
+        response.sendRedirect("/pages/signup/duplicateUsernameError.html");
+//        response.sendRedirect(GAMES_ROOM_URL);
     }
 
     private void resignUser(HttpServletRequest request, String usernameFromSession, String usernameFromParameter, UserManager userManager) {

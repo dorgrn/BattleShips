@@ -8,6 +8,7 @@
     <script src="/common/jquery-2.0.3.min.js"></script>
     <script src="game.js"></script>
     <script src="/pages/game/chat/chat.js"></script>
+    <script src="pageDisplay.js"></script>
     <script src="/common/ConstantsJS.js"></script>
 </head>
 <body style="height:100%">
@@ -52,8 +53,8 @@
             <p id="commentsLine" style="color: red">Comments Line: ............</p>
         </div>
         <div style="float: right">
-            <button type="button" onclick="backToGamesRoom()" id="retireButton">Retire</button>
-            <button type="button" onclick="logout()" id="exitButton">Exit</button>
+            <button type="button" onclick="ajaxRetireFromGame()" id="retireButton">Retire</button>
+            <button type="button" onclick="exitGame()" id="exitButton">Exit</button>
         </div>
     </div>
 
@@ -68,5 +69,6 @@
     <button type="button" onclick="onSendMessage($('#sendContent').val())">Send</button>
 </div>
 <p hidden id="myPlayerType"></p> <!-- hidden playerType -->
+<p hidden id="myGameRecord"></p> <!-- hidden gameRecord -->
 </body>
 </html>

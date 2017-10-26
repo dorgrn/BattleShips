@@ -1,4 +1,4 @@
-const INTERVAL_LENGTH = 5000;
+const INTERVAL_LENGTH = 2000;
 
 var intervalRefreshLists = null;
 
@@ -38,7 +38,7 @@ function ajaxJoinOrWatch(userRole, playerType, game) {
                 "USER_ROLE": userRole
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                if (jqXHR.status !== null && jqXHR.status === 400){
+                if (jqXHR.status && jqXHR.status !== 200){
                     if (jqXHR.getResponseHeader(ERROR_ATTRIBUTE) !== null) {
                         alert(jqXHR.getResponseHeader(ERROR_ATTRIBUTE));
                     }
@@ -131,7 +131,7 @@ function refreshLists() {
     ajaxGamesList();
 }
 
-// logout assumes #usernamenav is set to username
+// exitGame assumes #usernamenav is set to username
 function logout() {
     $.ajax({
         type: 'GET',

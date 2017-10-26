@@ -3,6 +3,7 @@ package com.BattleShipsWebApp.mainGamesRoom.servlets.readResource;
 import BattleShipsEngine.engine.ConfigException;
 import BattleShipsEngine.engine.Game;
 import BattleShipsEngine.engine.GameConfig;
+import BattleShipsEngine.engine.Player;
 import com.BattleShipsWebApp.constants.Constants;
 import com.BattleShipsWebApp.exceptions.RecordAlreadyExistsException;
 import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameRecord;
@@ -63,14 +64,16 @@ public class ReadXMLServlet extends HttpServlet {
             processGameRecord(gameName, creatorName, game);
 
             request.getSession().setAttribute(Constants.GAME_NAME_ATTRIBUTE_NAME, gameName);
+            request.getSession().setAttribute(Constants.PLAYER_TYPE_ATTRIBUTE, Player.Type.PLAYER_ONE);
             System.out.println("GameRecord inserted successfully");
 
             response.sendRedirect(Constants.GAME_URI);
             //DEBUG: System.out.println("The game " + gameName + " was saved on session " + request.getSession().toString());
         } catch (RecordAlreadyExistsException e) {
             // player is already in game, transfer to its game
-            request.getSession().setAttribute(Constants.GAME_NAME_ATTRIBUTE_NAME, gameName);
-            response.sendRedirect(Constants.GAME_URI);
+            //request.getSession().setAttribute(Constants.GAME_NAME_ATTRIBUTE_NAME, gameName);
+            response.sendRedirect(Constants.DUPLICATE_GAME_URI);
+
         } catch (JAXBException | ConfigException e) {
             // error in parsing file
             handleErrorInParsingFile(request, response, fileName, e);

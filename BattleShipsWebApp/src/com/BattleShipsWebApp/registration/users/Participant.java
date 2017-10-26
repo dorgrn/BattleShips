@@ -9,4 +9,8 @@ public class Participant extends User {
         super(userName);
         this.playerType = playerType;
     }
+
+    public Player.Type getPlayerType() {
+        return playerType;
+    }
 }

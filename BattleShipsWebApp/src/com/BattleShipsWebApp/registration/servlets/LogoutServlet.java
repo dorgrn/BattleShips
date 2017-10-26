@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet(name = "LogOutServlet", urlPatterns = {"/registration/logout"})
+@WebServlet(name = "LogOutServlet", urlPatterns = {"/registration/exitGame"})
 public class LogoutServlet extends HttpServlet {
 
     private final String SIGN_UP_URL = "/pages/signup/signup.html";
@@ -29,7 +29,7 @@ public class LogoutServlet extends HttpServlet {
         UserManager userManager = ServletUtils.getUserManager(getServletContext());
 
         if (usernameFromSession == null || usernameFromParameter == null) {
-            response.setHeader(Constants.USERNAME_ERROR, "User doesn't exist on logout.");
+            response.setHeader(Constants.USERNAME_ERROR, "User doesn't exist on exitGame.");
             response.sendRedirect(callerUri);
         }
 
@@ -40,7 +40,7 @@ public class LogoutServlet extends HttpServlet {
         } else { // username is found
             // remove user
             userManager.removeUser(usernameFromParameter);
-            System.out.println("On logout, request URI is: " + request.getRequestURI());
+            System.out.println("On exitGame, request URI is: " + request.getRequestURI());
             response.sendRedirect(SIGN_UP_URL);
         }
 

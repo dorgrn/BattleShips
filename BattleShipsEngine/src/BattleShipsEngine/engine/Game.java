@@ -31,6 +31,24 @@ public class Game implements Serializable {
         players.add(player2);
     }
 
+    // if game has no winner, returns null
+    public Player.Type getWinner() {
+        Player.Type result = null;
+
+
+        for ( Player player : players ) {
+            Player enemy = getOtherPlayer(player);
+
+            if (enemy.hasPlayerLost() || player.getHasWon()) {
+                result = player.getPlayerType();
+                break;
+            }
+        }
+
+        return result;
+    }
+
+
     public HitStatus makeTurn(Point pointToHit, long turnStartTime) {
         HitStatus result = null;
 
@@ -170,7 +188,7 @@ public class Game implements Serializable {
         enemy.removeMine(hitPoint);
     }
 
-    public HitStatus generateOppositeAttack(Point pointToHit){
+    public HitStatus generateOppositeAttack(Point pointToHit) {
         HitStatus result = null;
 
         Player enemy = getOtherPlayer(currentPlayer);

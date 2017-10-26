@@ -1,6 +1,9 @@
-package com.BattleShipsWebApp.mainGamesRoom.servlets.readResource;
+package com.BattleShipsWebApp.mainGamesRoom.servlets.gamesManagement;
 
 import com.BattleShipsWebApp.constants.Constants;
+import com.BattleShipsWebApp.exceptions.GameRecordSizeException;
+import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameRecordsManager;
+import com.BattleShipsWebApp.utils.ServletUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -9,13 +12,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-
-@WebServlet(name = "ErrorInFileInputServlet", urlPatterns = {"/gamesRoom/errorInFileInput"})
-public class ErrorInFileInputServlet extends HttpServlet {
+@WebServlet(name = "DeleteGameRecordServlet", urlPatterns = {"/gamesRoom/gameRecords/deleteGameRecord"})
+public class DeleteGameRecordServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setStatus(400);
-        response.sendRedirect(Constants.GAME_ROOM_URI);
+
+        // needed params
+        final String gameNameParameter = request.getParameter(Constants.GAME_NAME_ATTRIBUTE_NAME);
+
+        GameRecordsManager gameRecordsManager = ServletUtils.getGameRecordsManager(getServletContext());
+        try {
+            gameRecordsManager.removeGameRecord(gameNameParameter);
+        } catch (GameRecordSizeException e) {
+            e.printStackTrace();
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -57,6 +67,4 @@ public class ErrorInFileInputServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }
-
