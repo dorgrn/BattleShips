@@ -25,31 +25,40 @@ public class FindWinnerServlet extends HttpServlet {
         response.setContentType("application/json");
 
 
+        Player.Type winner = null;
+
+
+
         // needed params
         final String gameNameParameter = SessionUtils.getSessionGameName(request);
         final GameRecordsManager gameRecordsManager = ServletUtils.getGameRecordsManager(getServletContext());
 
         // get game
         final GameRecord gameRecord = gameRecordsManager.getGameByName(gameNameParameter);
-        final Game game  = gameRecord.getGame();
 
-        final Player.Type winnerPlayerType = game.getWinner();
-
-        if (winnerPlayerType == null){
-            return; // no winner
+        // check game version
+        if (gameRecord.getVersion() < SessionUtils.getGameVersion(request)){
+            return;
         }
 
-        final String gameWinnerUsername = gameRecord.getUsernameByPlayerType(winnerPlayerType);
+        Game game = gameRecord.getGame();
+        if (gameRecord.getWinner() != null) {
+            winner = gameRecord.getWinner();
+        } else if (game.getWinner() != null) {
+            winner = game.getWinner();
+            gameRecord.setWinner(winner);
+        }
 
         try (PrintWriter out = response.getWriter()) {
 
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty(Constants.GAME_WINNER_ATTRIBUTE, gameWinnerUsername);
+            if (winner != null) {
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty(Constants.GAME_WINNER_ATTRIBUTE, winner.toString());
 
+                out.println(new Gson().toJson(jsonObject));
+                out.flush();
 
-            out.println(new Gson().toJson(jsonObject));
-            out.flush();
-
+            }
         }
     }
 

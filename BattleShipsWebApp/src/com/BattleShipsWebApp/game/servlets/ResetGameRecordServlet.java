@@ -1,5 +1,7 @@
 package com.BattleShipsWebApp.game.servlets;
 
+import com.BattleShipsWebApp.exceptions.GameRecordSizeException;
+import com.BattleShipsWebApp.exceptions.RecordAlreadyExistsException;
 import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameRecord;
 import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameRecordsManager;
 import com.BattleShipsWebApp.utils.ServletUtils;
@@ -11,20 +13,25 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
-@WebServlet(name = "ShowStatsServlet", urlPatterns = {"/game/showStats"})
-public class ShowStatsServlet extends HttpServlet {
+
+@WebServlet(name = "ResetGameRecordServlet", urlPatterns = {"/game/resetGameRecordServlet"})
+public class ResetGameRecordServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException{
+            throws ServletException, IOException {
 
-        final String gameName = SessionUtils.getSessionGameName(request);
+
+        // needed params
+        final String gameNameParameter = SessionUtils.getSessionGameName(request);
         final GameRecordsManager gameRecordsManager = ServletUtils.getGameRecordsManager(getServletContext());
 
-        final GameRecord gameRecord = gameRecordsManager.getGameByName(gameName);
 
-        try (PrintWriter out = response.getWriter()){
-            //createGameStats(gameRecord, out);
+        // get game
+        try {
+            SessionUtils.increaseGameVersion(request); // increase the game version we respond to
+            gameRecordsManager.resetGameRecord(gameNameParameter, SessionUtils.getGameVersion(request));
+        } catch (GameRecordSizeException e) {
+            e.printStackTrace();
         }
     }
 

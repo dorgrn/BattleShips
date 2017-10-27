@@ -1,6 +1,6 @@
 package BattleShipsEngine.engine;
 
-import java.io.Serializable;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -275,6 +275,22 @@ public class Game implements Serializable {
 
     public List<Player> getPlayers() {
         return players;
+    }
+
+    // https://stackoverflow.com/questions/64036/how-do-you-make-a-deep-copy-of-an-object-in-java
+    public static byte[] deepCopy(Game game) throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
+        oos.writeObject(game);
+        oos.flush();
+        oos.close();
+        bos.close();
+        return bos.toByteArray();
+    }
+
+    public static Game translateDeepCopy(byte[] originalGame) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream bais = new ByteArrayInputStream(originalGame);
+        return  (Game) new ObjectInputStream(bais).readObject();
     }
 
     public enum HitStatus {

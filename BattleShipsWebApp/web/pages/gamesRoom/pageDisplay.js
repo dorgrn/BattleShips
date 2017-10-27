@@ -92,6 +92,7 @@ function translateGameStatus(gameStatus) {
 function createJoinGameLink(game) {
     var result = "";
     switch (game.gameStatus) {
+        case EMPTY_GAME:
         case ONE_PLAYER:
             result += "<a href='' onclick='return false;' class='joinLink'>"
                 + "Play" + "</a>";
@@ -99,9 +100,6 @@ function createJoinGameLink(game) {
         case FULL_GAME:
             result += "<a href='' onclick='return false;' class='watchLink'>"
                 + "Watch" + "</a>";
-            break;
-        case EMPTY_GAME:
-            result += "-";
             break;
         default:
             break;

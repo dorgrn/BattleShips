@@ -7,8 +7,8 @@ const SHIP_SYMBOL = 'S';
 const MINE_SYMBOL = 'M';
 
 var gameActive = false;
+var gameStarted = false;
 var intervalRefreshLists = null;
-var intervalCheckRestartGame = null;
 
 $(window).on('load', function () {
     startGame();
@@ -24,6 +24,7 @@ function startGame() {
     ajaxGetCurrentUserName();
     ajaxGetCurrentUserType();
     ajaxGetAndInitCurrentGame();
+    gameStarted = true;
 }
 
 function ajaxGetCurrentUserName() {
@@ -39,7 +40,6 @@ function ajaxGetCurrentUserName() {
     });
 }
 
-// TODO: function duplication, i'll improve when i'll have the time
 function ajaxGetCurrentUserType() {
     $.ajax({
         url: '/gamesRoom/currentUserType',
@@ -68,38 +68,17 @@ function ajaxGetCurrentGameAndUpdateBoards(btn) {
     });
 }
 
-function ajaxGetCurrentGameAndUpdateStatus(newStatus) {
-    $.ajax({
-        url: '/game/currentGameRecord',
-        type: 'GET',
-        cache: false,
-        contentType: 'application/json; charset=utf-8',
-        beforeSend: function () {
-            // console.log("before");
-        },
-        success: function (gameRecord) {
-            console.log("got to ajaxGetCurrentGameAndUpdateStatus success");
-            ajaxUpdateGameStatus(gameRecord.getGameName, newStatus);
-        }
-    });
-}
-
-
 function ajaxUpdateCurrentGame() {
     $.ajax({
         url: '/game/currentGameRecord',
         type: 'GET',
         cache: false,
         contentType: 'application/json; charset=utf-8',
-        beforeSend: function () {
-            // console.log("before");
-        },
         success: function (gameRecord) {
             initializeGame(gameRecord);
         }
     });
 }
-
 
 function isItMyTurn(gameRecord) {
     var currentPlayer = gameRecord.game.currentPlayer.playerType;
@@ -166,7 +145,17 @@ function ajaxMakeTurn(gameRecord, buttonID) {
 
 function checkForWinner() {
     ajaxFindGameWinner();
+}
 
+function ajaxRetireFromGame() {
+    $.ajax({
+        type: 'GET',
+        url: '/game/retireFromGame',
+        dataType: 'html',
+        success: function () {
+
+        }
+    });
 }
 
 function updateDataOnScreen(gameRecord) {
@@ -178,7 +167,9 @@ function updateDataOnScreen(gameRecord) {
     updateCommentsLine(gameRecord.participants.length);
     updateShipsData(gameRecord.game);
     updateMineButton(gameRecord, gameRecord.game.currentPlayer.amountOfMinesToPlace, gameRecord.participants.length);
-    checkForWinner();
+    if (gameStarted){
+        checkForWinner();
+    }
 }
 
 function updateGameActiveState(amountOfParticipants) {
@@ -227,14 +218,16 @@ function ajaxPlaceMine(gameRecord, buttonID) {
     });
 }
 
-
 function showPlayerWon(username) {
+    if (!gameActive){
+        return;
+    }
 
     if (username === $("#myPlayerName")) {
-        confirm("Congratulations! " + username + " you Won!");
+        alert("Congratulations! " + username + " you Won!");
     }
     else {
-        confirm("Sorry, you lose.");
+        alert("Sorry, you lose.");
     }
 }
 
@@ -242,8 +235,9 @@ function ajaxFindGameWinner() {
     $.ajax({
         type: 'GET',
         url: '/game/findWinner',
+        cache: false,
         success: function (winnerPlayer) {
-            if (winnerPlayer) {
+            if (winnerPlayer && gameStarted) {
                 handleGameOver(winnerPlayer);
             }
         }
@@ -252,77 +246,32 @@ function ajaxFindGameWinner() {
 
 function retireFromGame() {
     alert("You retired! Returning to games room!");
-
+    ajaxRetireFromGame();
     handleGameOver(null);
+
 }
 
-
-
-function handleGameOver(winnerPlayer) {
-    gameActive = false;
-
-    if (winnerPlayer !== null){
-        showPlayerWon(winnerPlayer);
-    }
-
-    disableAllButtons();
-    alert("Press OK to return to the Games Room");
-    stopListsRefresh();
-    ajaxRemovePlayersFromGameRecord();
-    startGame();
-    window.location.replace(GAMES_ROOM_URI);
-}
-
-function disableAllButtons() {
-
-    // *** TODO: Roy please implement this ***
-
-    // $(function () {
-    //     var buttons = $(".boardButton");
-    //     $.each(buttons || [], function(index,button){
-    //         $(button).attr("disabled", true);
-    //     });
-    // });
-}
-
-function ajaxRemovePlayersFromGameRecord() {
+function ajaxResetGameRecord() {
     $.ajax({
         type: 'GET',
-        url: '/game/removePlayersFromGame',
+        url: '/game/resetGameRecordServlet',
         success: function () {
+            startGame();
+            window.location.replace(GAMES_ROOM_URI);
         }
     });
 }
 
-// function logoutFromGame() {
-//     window.location.replace(GAMES_ROOM_URI);
-// }
+function handleGameOver(winnerPlayer) {
+    if (!gameStarted){
+        return;
+    }
+    gameActive = false;
 
-// function exitGame() {
-//     logout();
-//     // $.ajax({
-//     //     type: 'GET',
-//     //     url: SIGN_UP_URI,
-//     //     data: {
-//     //         "CALLER_URI": GAME_URI
-//     //     },
-//     //     success: function () {
-//     //         window.location.replace(SIGN_UP_URI);
-//     //     }
-//     // });
-// }
+    if (winnerPlayer !== null) {
+        showPlayerWon(winnerPlayer);
+    }
 
-// function ajaxUpdateGameStatus(game, removeOrAdd) {
-//     $.ajax({
-//         type: 'POST',
-//         url: UPDATE_GAME_STATUS_URI,
-//         dataType: 'html',
-//         data: { // should match Constants
-//             "GAME_NAME": game.gameName,
-//             "GAME_STATUS": removeOrAdd
-//         },
-//         success: function (data, textStatus, request) {
-//             //console.log("got to success in ajax gameStatus");
-//         }
-//     });
-// }
+    alert("Press OK to return to the Games Room");
+    ajaxResetGameRecord();
+}

@@ -1,12 +1,8 @@
 package com.BattleShipsWebApp.game.servlets;
 
-import BattleShipsEngine.engine.Game;
 import BattleShipsEngine.engine.Player;
-import com.BattleShipsWebApp.exceptions.GameRecordSizeException;
-import com.BattleShipsWebApp.exceptions.RecordDoesNotExistsException;
 import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameRecord;
 import com.BattleShipsWebApp.mainGamesRoom.gameRecordsManager.GameRecordsManager;
-import com.BattleShipsWebApp.registration.users.User;
 import com.BattleShipsWebApp.utils.ServletUtils;
 import com.BattleShipsWebApp.utils.SessionUtils;
 
@@ -22,35 +18,16 @@ import java.io.IOException;
 public class RetireFromGameServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-
         // needed params
         final String gameNameParameter = SessionUtils.getSessionGameName(request);
-        final String userType = SessionUtils.getSessionUserType(request);
+        final Player.Type playerType = SessionUtils.getSessionPlayerType(request);
         final GameRecordsManager gameRecordsManager = ServletUtils.getGameRecordsManager(getServletContext());
-
 
         // get game
         final GameRecord gameRecord = gameRecordsManager.getGameByName(gameNameParameter);
-        final Game game = gameRecord.getGame();
 
-        handleRetirement(userType, game);
-        User participantUser = new User(SessionUtils.getSessionUsername(request));
-        try {
-            gameRecord.removeParticipant(participantUser);
-        } catch (RecordDoesNotExistsException | GameRecordSizeException e) {
-            //TODO: handle
-        }
+        gameRecord.setWinner(Player.getOtherPlayerType(playerType));
 
-
-    }
-
-    private void handleRetirement(String userType, Game game) {
-        Player player = game.getPlayerByType(Player.Type.valueOf(userType));
-
-        Player enemy = game.getOtherPlayer(player);
-
-        enemy.setHasWon(true);
     }
 
 

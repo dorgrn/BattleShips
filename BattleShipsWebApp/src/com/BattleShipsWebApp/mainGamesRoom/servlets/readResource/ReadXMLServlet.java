@@ -61,7 +61,9 @@ public class ReadXMLServlet extends HttpServlet {
             gameConfig.load(outputTempFile);
             Game game = gameConfig.initiateGameFromGenerated();
 
-            processGameRecord(gameName, creatorName, game);
+            int currentGameVersion = SessionUtils.getGameVersion(request);
+
+            processGameRecord(gameName, creatorName, game, currentGameVersion);
 
             request.getSession().setAttribute(Constants.GAME_NAME_ATTRIBUTE_NAME, gameName);
             request.getSession().setAttribute(Constants.PLAYER_TYPE_ATTRIBUTE, Player.Type.PLAYER_ONE);
@@ -89,15 +91,15 @@ public class ReadXMLServlet extends HttpServlet {
         }
     }
 
-    private void processGameRecord(String gameName, String creatorName, Game game) throws RecordAlreadyExistsException {
+    private void processGameRecord(String gameName, String creatorName, Game game, int version) throws RecordAlreadyExistsException {
         GameRecordsManager gameRecordsManager = ServletUtils.getGameRecordsManager(getServletContext());
 
-        GameRecord gameRecord = createGameRecord(gameName, creatorName, game);
+        GameRecord gameRecord = createGameRecord(gameName, creatorName, game, version);
         gameRecordsManager.addGameRecord(gameRecord);
     }
 
-    private GameRecord createGameRecord(String gameName, String creatorName, Game game) throws RecordAlreadyExistsException {
-        GameRecord gameRecord = new GameRecord(gameName, creatorName, game);
+    private GameRecord createGameRecord(String gameName, String creatorName, Game game, int version) throws RecordAlreadyExistsException {
+        GameRecord gameRecord = new GameRecord(gameName, creatorName, game, version);
         gameRecord.setGameStatus(GameStatus.ONE_PLAYER);  // creator - first player
 
         return gameRecord;

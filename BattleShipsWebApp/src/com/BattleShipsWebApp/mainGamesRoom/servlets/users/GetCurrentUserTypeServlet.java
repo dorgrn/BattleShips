@@ -1,5 +1,6 @@
 package com.BattleShipsWebApp.mainGamesRoom.servlets.users;
 
+import BattleShipsEngine.engine.Player;
 import com.BattleShipsWebApp.constants.Constants;
 import com.BattleShipsWebApp.utils.SessionUtils;
 import com.google.gson.JsonObject;
@@ -21,9 +22,12 @@ public class GetCurrentUserTypeServlet extends HttpServlet {
 
         try (PrintWriter out = response.getWriter()) {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty(Constants.PLAYER_TYPE_ATTRIBUTE, SessionUtils.getSessionUserType(request));
-            out.println(jsonObject);
-            out.flush();
+            Player.Type playerType = SessionUtils.getSessionPlayerType(request);
+            if (playerType != null) {
+                jsonObject.addProperty(Constants.PLAYER_TYPE_ATTRIBUTE, playerType.toString());
+                out.println(jsonObject);
+                out.flush();
+            }
         }
     }
 

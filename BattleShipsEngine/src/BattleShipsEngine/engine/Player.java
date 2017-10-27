@@ -300,4 +300,22 @@ public class Player implements Serializable {
         }
     }
 
+    public static Player.Type getOtherPlayerType(Player.Type playerType){
+        Player.Type result = null;
+        if (playerType == null){
+            return null;
+        }
+
+        switch (playerType){
+
+            case PLAYER_ONE:
+                result =  Player.Type.PLAYER_TWO;
+                break;
+            case PLAYER_TWO:
+                result =  Player.Type.PLAYER_ONE;
+                break;
+        }
+        return result;
+    }
+
 }

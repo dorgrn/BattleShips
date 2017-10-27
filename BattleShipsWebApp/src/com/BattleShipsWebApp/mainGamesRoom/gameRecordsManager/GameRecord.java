@@ -12,6 +12,7 @@ import com.BattleShipsWebApp.registration.users.Participant;
 import com.BattleShipsWebApp.registration.users.User;
 import com.BattleShipsWebApp.registration.users.Watcher;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
@@ -23,10 +24,13 @@ public class GameRecord {
     private GameStatus gameStatus = GameStatus.EMPTY;
     private final Set<Participant> participants;
     private final Set<Watcher> watchers;
-    private final Game game;
+    private Game game;
+    private byte[] originalGame; // saving inorder to be able to
     private final int boardSize;
+    private Player.Type winner = null;
+    private int version = 0;
 
-    public GameRecord(String gameName, String creatorName, Game game) {
+    public GameRecord(String gameName, String creatorName, Game game, int version) {
         this.gameName = gameName;
         this.game = game;
         this.creator = new User(creatorName); // creator is regarded as player one
@@ -34,6 +38,13 @@ public class GameRecord {
         participants.add(new Participant(creatorName, Player.Type.PLAYER_ONE));
         this.watchers = new HashSet<>();
         this.boardSize = game.getBoardSize();
+        this.version = version;
+
+        try{
+            originalGame = Game.deepCopy(game);
+        } catch (IOException e) {
+            // ignore
+        }
     }
 
     public String getGameName() {
@@ -172,8 +183,39 @@ public class GameRecord {
         return result.orElse(null);
     }
 
-    public void clearParticipants() {
-        participants.clear();
-        gameStatus = GameStatus.EMPTY;
+
+    public void resetGame(int newVersion) {
+        this.gameStatus = GameStatus.EMPTY;
+        this.participants.clear();
+        this.watchers.clear();
+
+        try {
+            this.game = Game.translateDeepCopy(originalGame);
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        this.winner = null;
+        this.version = newVersion;
+    }
+
+    public Player.Type getWinner() {
+        return winner;
+    }
+
+    public void setWinner(Player.Type playerType) {
+        winner = playerType;
+    }
+
+    public int getBoardSize() {
+        return boardSize;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 }

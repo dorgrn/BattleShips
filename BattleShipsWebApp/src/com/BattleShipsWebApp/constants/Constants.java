@@ -1,5 +1,7 @@
 package com.BattleShipsWebApp.constants;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class Constants {
     public static final String USERNAME = "username";
     public static final String USERNAME_ERROR = "username_error";
@@ -28,6 +30,7 @@ public class Constants {
     public static final String CHAT_MESSAGE_ATTRIBUTE = "CHAT_MESSAGE_ATTRIBUTE" ;
     public static final String BUTTON_ID_ATTRIBUTE_NAME = "BUTTON_ID";
     public static final String GAME_WINNER_ATTRIBUTE = "GAME_WINNER_ATTRIBUTE";
+    public static final String GAME_VERSION_ATTRIBUTE_NAME = "GAME_VERSION_ATTRIBUTE";
     public static String USER_TYPE_ATTRIBUTE_NAME = "USER_TYPE_ATTRIBUTE";
 
 
