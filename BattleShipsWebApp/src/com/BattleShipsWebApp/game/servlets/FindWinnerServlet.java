@@ -24,10 +24,7 @@ public class FindWinnerServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("application/json");
 
-
         Player.Type winner = null;
-
-
 
         // needed params
         final String gameNameParameter = SessionUtils.getSessionGameName(request);
@@ -50,14 +47,13 @@ public class FindWinnerServlet extends HttpServlet {
         }
 
         try (PrintWriter out = response.getWriter()) {
-
             if (winner != null) {
+                String username = gameRecord.getUsernameByPlayerType(winner);
                 JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty(Constants.GAME_WINNER_ATTRIBUTE, winner.toString());
-
+                jsonObject.addProperty(Constants.GAME_WINNER_ATTRIBUTE, username);
+                jsonObject.addProperty(Constants.USERNAME, SessionUtils.getSessionUsername(request));
                 out.println(new Gson().toJson(jsonObject));
                 out.flush();
-
             }
         }
     }

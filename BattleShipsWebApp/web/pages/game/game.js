@@ -218,12 +218,8 @@ function ajaxPlaceMine(gameRecord, buttonID) {
     });
 }
 
-function showPlayerWon(username) {
-    if (!gameActive){
-        return;
-    }
-
-    if (username === $("#myPlayerName")) {
+function showPlayerWon(playerThatWon, username) {
+    if (username === playerThatWon) {
         alert("Congratulations! " + username + " you Won!");
     }
     else {
@@ -236,9 +232,9 @@ function ajaxFindGameWinner() {
         type: 'GET',
         url: '/game/findWinner',
         cache: false,
-        success: function (winnerPlayer) {
-            if (winnerPlayer && gameStarted) {
-                handleGameOver(winnerPlayer);
+        success: function (data) {
+            if (data && gameStarted) {
+                handleGameOver(data.GAME_WINNER_ATTRIBUTE, data.username);
             }
         }
     });
@@ -247,8 +243,8 @@ function ajaxFindGameWinner() {
 function retireFromGame() {
     alert("You retired! Returning to games room!");
     ajaxRetireFromGame();
-    handleGameOver(null);
 
+    handleGameOver($("#opponentName"));
 }
 
 function ajaxResetGameRecord() {
@@ -262,16 +258,16 @@ function ajaxResetGameRecord() {
     });
 }
 
-function handleGameOver(winnerPlayer) {
+function handleGameOver(winnerPlayer, currentUsername) {
     if (!gameStarted){
         return;
     }
     gameActive = false;
 
     if (winnerPlayer !== null) {
-        showPlayerWon(winnerPlayer);
+        showPlayerWon(winnerPlayer, currentUsername);
     }
 
-    alert("Press OK to return to the Games Room");
+    //alert("Press OK to return to the Games Room");
     ajaxResetGameRecord();
 }
