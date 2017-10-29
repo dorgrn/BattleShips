@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet(name = "DeleteGameRecordServlet", urlPatterns = {"/gamesRoom/gameRecords/deleteGameRecord"})
+@WebServlet(name = "DeleteGameRecordServlet", urlPatterns = {"/BattleShipsWebApp_war/gamesRoom/gameRecords/deleteGameRecord"})
 public class DeleteGameRecordServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

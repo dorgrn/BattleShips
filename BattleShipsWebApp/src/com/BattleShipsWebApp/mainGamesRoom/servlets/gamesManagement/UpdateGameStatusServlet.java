@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 
-@WebServlet(name = "UpdateGameStatusServlet", urlPatterns = {"/gamesRoom/updateGameStatus"})
+@WebServlet(name = "UpdateGameStatusServlet", urlPatterns = {"/BattleShipsWebApp_war/gamesRoom/updateGameStatus"})
 public class UpdateGameStatusServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

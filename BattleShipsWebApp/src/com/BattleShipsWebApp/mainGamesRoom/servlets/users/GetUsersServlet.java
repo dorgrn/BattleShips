@@ -16,7 +16,7 @@ import com.BattleShipsWebApp.registration.users.UserManager;
 import com.BattleShipsWebApp.utils.ServletUtils;
 import com.google.gson.Gson;
 
-@WebServlet(name = "GetUsersServlet", urlPatterns = {"/gamesRoom/users"})
+@WebServlet(name = "GetUsersServlet", urlPatterns = {"/BattleShipsWebApp_war/gamesRoom/users"})
 public class GetUsersServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

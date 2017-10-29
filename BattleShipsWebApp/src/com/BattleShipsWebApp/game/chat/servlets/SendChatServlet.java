@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet(name = "GetUserChatServlet", urlPatterns = {"/game/chat/sendMessage"})
+@WebServlet(name = "GetUserChatServlet", urlPatterns = {"/BattleShipsWebApp_war/game/chat/sendMessage"})
 public class SendChatServlet extends HttpServlet {
 
     /**

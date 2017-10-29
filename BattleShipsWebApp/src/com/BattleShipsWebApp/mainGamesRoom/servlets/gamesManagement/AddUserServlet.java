@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 
-@WebServlet(name = "AddUserServlet", urlPatterns = {"/gamesRoom/gameRecords/addUser"})
+@WebServlet(name = "AddUserServlet", urlPatterns = {"/BattleShipsWebApp_war/gamesRoom/gameRecords/addUser"})
 public class AddUserServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

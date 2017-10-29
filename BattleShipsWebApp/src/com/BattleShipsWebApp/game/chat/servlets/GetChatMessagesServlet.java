@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
-@WebServlet(name = "GetChatMessagesServlet", urlPatterns = {"/game/chat/getMessages"})
+@WebServlet(name = "GetChatMessagesServlet", urlPatterns = {"/BattleShipsWebApp_war/game/chat/getMessages"})
 public class GetChatMessagesServlet extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)

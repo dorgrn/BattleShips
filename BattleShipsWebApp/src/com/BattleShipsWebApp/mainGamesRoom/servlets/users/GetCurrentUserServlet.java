@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-    @WebServlet(name = "GetCurrentUserServlet", urlPatterns = {"/gamesRoom/currentUser"})
+    @WebServlet(name = "GetCurrentUserServlet", urlPatterns = {"/BattleShipsWebApp_war/gamesRoom/currentUser"})
     public class GetCurrentUserServlet extends HttpServlet {
         protected void processRequest(HttpServletRequest request, HttpServletResponse response)
                 throws ServletException, IOException {

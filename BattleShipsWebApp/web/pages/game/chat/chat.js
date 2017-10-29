@@ -3,7 +3,7 @@
 function onSendMessage(message) {
 
     ajaxSendMessageToServer(message);
-    $("#messages").text('');
+    //$("#messages").text('');
 }
 
 function ajaxSendMessageToServer(message) {
@@ -33,13 +33,14 @@ function refreshMessages(messagesArray) {
     var messagesDiv = $("#messages");
     messagesDiv.text('');
 
+    scrollToBottom(messagesDiv);
     $.each(messagesArray || [], function (index, valueArray) {
         $.each(valueArray || [] , function (index2, message) {
             appendMessage(message);
         });
     });
 
-    scrollToBottom(messagesDiv);
+
 }
 
 function appendMessage(message) {
@@ -49,5 +50,5 @@ function appendMessage(message) {
 
 
 function scrollToBottom(messageDiv) {
-    messageDiv.scrollTop = messageDiv.scrollHeight;
+   $(messageDiv).scrollTop = $(messageDiv)[0].scrollHeight;
 }

@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet(name = "LogOutServlet", urlPatterns = {"/registration/exitGame"})
+@WebServlet(name = "LogOutServlet", urlPatterns = {"/BattleShipsWebApp/registration/exitGame"})
 public class LogoutServlet extends HttpServlet {
 
     private final String SIGN_UP_URL = "/pages/signup/signup.html";
